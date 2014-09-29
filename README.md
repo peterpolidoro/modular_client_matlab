@@ -42,7 +42,7 @@ Download and install the Arduino software if necessary from:
 
 Connect Arduino device to computer with a USB cable.
 
-Download this repository either using git or by downloading zip.
+Download this repository either using git or by downloading a zip file.
 
 ### Using git
 
@@ -52,7 +52,7 @@ Download this repository either using git or by downloading zip.
 
     https://github.com/JaneliaSciComp/matlab_arduino_device/archive/master.zip
 
-Add the following directory inside this downloaded repository and all
+Add the following directory (inside this downloaded repository) and all
 its subdirectories to the Matlab path:
 
     matlab_arduino_device/arduino_device/
