@@ -49,5 +49,5 @@ Download this repository either using git or by downloading zip.
 
     https://github.com/JaneliaSciComp/matlab_arduino_device/archive/master.zip
 
-Add the matlab\_arduino\_device repository directory and all its
+Add the matlab\_arduino\_device/arduino_device directory and all its
 subdirectories to the Matlab path.
