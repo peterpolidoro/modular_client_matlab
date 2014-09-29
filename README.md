@@ -1,7 +1,7 @@
 matlab_arduino_device
 =====================
 
-arduino_device.m - matlab serial interface for controlling and
+ArduinoDevice.m - matlab serial interface for controlling and
 communicating with Arduino devices using the DeviceInterface Arduino
 library located in the arduino-libraries git repository.
 
