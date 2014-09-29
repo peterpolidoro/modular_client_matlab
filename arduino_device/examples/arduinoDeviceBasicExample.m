@@ -1,11 +1,10 @@
-function arduino_device_basic_example(port)
-% arduino_controller_basic_example: demonstrates basic use of the
-% ArduinoStepperController class to control the arduino stepper
-% controller.
+function arduinoDeviceBasicExample(port)
+% arduinoDeviceBasicExample: demonstrates basic use of the
+% ArduinoDevice class.
 %
 % Usage: (replace com5 with the serial port of your device)
 %
-% arduino_device_basic_example('com5')
+% arduinoDeviceBasicExample('com5')
 %
 %  * Find serial port of Arduino board connected with a USB cable
 %    Use Arduino environment to help find port or read more details
