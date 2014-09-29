@@ -22,7 +22,7 @@ For help type "help ArduinoDevice" from the Matlab command line.
 
 See example m files in:
 
-    matlab\_arduino\_device/arduino_device/examples
+    matlab_arduino_device/arduino_device/examples/
 
 ```matlab
 dev = ArduinoDevice('com4')  % creates a device object
@@ -55,4 +55,4 @@ Download this repository either using git or by downloading zip.
 Add the following directory inside this downloaded repository and all
 its subdirectories to the Matlab path:
 
-    matlab\_arduino\_device/arduino_device
+    matlab_arduino_device/arduino_device/
