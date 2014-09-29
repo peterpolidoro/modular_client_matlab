@@ -27,7 +27,7 @@ function arduinoDeviceBasicExample(port)
     dev.getDevInfo()
 
     % Pause for a little bit for added dramma
-    pause(2.0)
+    pause(1.0)
 
     % Print dynamic methods
     dev.getCommands()

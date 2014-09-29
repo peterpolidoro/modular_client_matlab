@@ -5,30 +5,6 @@
 %
 %    https://github.com/JaneliaSciComp/arduino-libraries
 %
-% Notes:
-%
-%  * Find serial port of Arduino board connected with a USB cable
-%    Use Arduino environment to help find port or read more details
-%    here: http://arduino.cc/en/Guide/HomePage
-%    Windows:
-%      Typically 'com3' or higher. Use 'Device Manager' and look
-%      under 'Ports'.
-%    Mac:
-%      Typically something like '/dev/tty.usbmodem'
-%    Linux:
-%      Typically something like '/dev/ttyACM0'
-%
-%
-% Typical Usage:
-%
-%   dev = ArduinoDevice('com4')  % creates a device object
-%   dev.open()                   % opens a serial connection to the device
-%   dev.getDevInfo()             % get device information
-%   dev.getCommmands()           % get device commands
-%   dev.close()                  % close serial connection
-%   delete(dev)                  % deletes the device
-%
-%
 % Public properties
 % ------------------
 %
@@ -72,6 +48,30 @@
 %
 %   * setArduinoSerialNumber - sets the serial number of the device.
 %     Usage: dev.setSerialNumber(serialNum)
+%
+% Notes:
+%
+%  * Find serial port of Arduino board connected with a USB cable
+%    Use Arduino environment to help find port or read more details
+%    here: http://arduino.cc/en/Guide/HomePage
+%    Windows:
+%      Typically 'com3' or higher. Use 'Device Manager' and look
+%      under 'Ports'.
+%    Mac:
+%      Typically something like '/dev/tty.usbmodem'
+%    Linux:
+%      Typically something like '/dev/ttyACM0'
+%
+%
+% Typical Usage:
+%
+%   dev = ArduinoDevice('com4')  % creates a device object
+%   dev.open()                   % opens a serial connection to the device
+%   dev.getDevInfo()             % get device information
+%   dev.getCommmands()           % get device commands
+%   dev.close()                  % close serial connection
+%   delete(dev)                  % deletes the device
+%
 %
 
 
