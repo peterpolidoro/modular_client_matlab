@@ -2,10 +2,7 @@ matlab_arduino_device
 =====================
 
 ArduinoDevice.m - matlab serial interface for controlling and
-communicating with Arduino devices using the DeviceInterface Arduino
-library located in the arduino-libraries git repository.
-
-    https://github.com/JaneliaSciComp/arduino-libraries
+communicating with Arduino devices running the appropriate firmware.
 
 Authors:
 
@@ -42,15 +39,9 @@ Download and install the Arduino software if necessary from:
 
 Connect Arduino device to computer with a USB cable.
 
-Download this repository either using git or by downloading a zip file.
+Download this repository:
 
-### Using git
-
-    git clone https://github.com/JaneliaSciComp/matlab_arduino_device.git
-
-### Download zip and uncompress
-
-    https://github.com/JaneliaSciComp/matlab_arduino_device/archive/master.zip
+    https://github.com/JaneliaSciComp/matlab_arduino_device
 
 Add the following directory (inside this downloaded repository) and all
 its subdirectories to the Matlab path:

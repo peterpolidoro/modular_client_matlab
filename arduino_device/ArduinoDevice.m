@@ -1,9 +1,7 @@
 %
 % ArduinoDevice - matlab serial interface for controlling and
-% communicating with Arduino devices using the DeviceInterface Arduino
-% library located in the arduino-libraries git repository.
-%
-%    https://github.com/JaneliaSciComp/arduino-libraries
+% communicating with Arduino devices running the appropriate
+% firmware.
 %
 % Public properties
 % ------------------
