@@ -22,28 +22,84 @@ See example m files in:
     matlab_arduino_device/arduino_device/examples/
 
 ```matlab
-dev = ArduinoDevice('com4')  % creates a device object
-dev.open()                   % opens a serial connection to the device
-dev.getDevInfo()             % get device information
-dev.getCommands()            % get device commands
-dev.close()                  % close serial connection
-delete(dev)                  % deletes the device
+serial_port = '/dev/ttyACM0'     % example Linux serial port
+serial_port = '/dev/tty.usbmodem262471' % example Mac OS X serial port
+serial_port = 'COM4'             % example Windows serial port
+dev = ArduinoDevice(serial_port) % creates a device object
+dev.open()                       % opens a serial connection to the device
+dev.getDevInfo()                 % get device information
+dev.getCommands()                % get device commands
+dev.close()                      % close serial connection
+delete(dev)                      % deletes the device
 ```
 
 ##Installation
 
+###Drivers
 
-Download and install the Arduino software if necessary from:
+####Windows
 
-    http://arduino.cc/en/Main/Software
+Windows needs drivers in order to communicate with an
+Arduino. Follow install instructions here:
 
-Connect Arduino device to computer with a USB cable.
+    http://arduino.cc/en/Guide/Windows
 
-Download this repository:
+####Linux and Mac OS X
 
-    https://github.com/JaneliaSciComp/matlab_arduino_device
+Extra drivers are unnecesary.
+
+###Download this repository from github
+
+Either use git or download and uncompress zip file.
+
+####Using git
+
+Install git if necessary:
+
+    http://git-scm.com/book/en/Getting-Started-Installing-Git
+
+Clone this repository:
+
+    git clone https://github.com/JaneliaSciComp/matlab_arduino_device.git
+
+####Using zip file
+
+    https://github.com/JaneliaSciComp/matlab_arduino_device/archive/master.zip
+
+###Setup Matlab
 
 Add the following directory (inside this downloaded repository) and all
 its subdirectories to the Matlab path:
 
     matlab_arduino_device/arduino_device/
+
+###Setup Hardware
+
+Connect Arduino device to computer with a USB cable.
+
+Find serial port of connected device. Use Arduino environment to help
+find port or read more details here:
+
+    http://arduino.cc/en/Guide/HomePage
+
+####Windows:
+
+Typically 'COM3' or higher. Use 'Device Manager' and look under
+'Ports'.
+
+####Mac OS X:
+
+List directory contents of /dev:
+
+    ls /dev
+
+Typically something like '/dev/tty.usbmodem'
+
+####Linux:
+
+List directory contents of /dev:
+
+    ls /dev
+
+Typically something like '/dev/ttyACM0'
+

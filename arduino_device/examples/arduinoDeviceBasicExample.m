@@ -2,20 +2,20 @@ function arduinoDeviceBasicExample(port)
 % arduinoDeviceBasicExample: demonstrates basic use of the
 % ArduinoDevice class.
 %
-% Usage: (replace com5 with the serial port of your device)
-%
-% arduinoDeviceBasicExample('com5')
-%
 %  * Find serial port of Arduino board connected with a USB cable
 %    Use Arduino environment to help find port or read more details
 %    here: http://arduino.cc/en/Guide/HomePage
 %    Windows:
 %      Typically 'com3' or higher. Use 'Device Manager' and look
 %      under 'Ports'.
-%    Mac:
+%    Mac OS X:
 %      Typically something like '/dev/tty.usbmodem'
 %    Linux:
 %      Typically something like '/dev/ttyACM0'
+%
+% Usage: (replace 'COM5' with the serial port of your device)
+%
+% arduinoDeviceBasicExample('COM5')
 %
 
     % Create the Arduino device object, open serial
