@@ -19,7 +19,7 @@ For help type "help ArduinoDevice" from the Matlab command line.
 
 See example m files in:
 
-    [../arduino_device/examples/](../arduino_device/examples/)
+[../arduino_device/examples/](../arduino_device/examples/)
 
 ```matlab
 serial_port = '/dev/ttyACM0'     % example Linux serial port
@@ -42,7 +42,7 @@ delete(dev)                      % deletes the device
 Windows needs drivers in order to communicate with an
 Arduino. Follow install instructions here:
 
-    [http://arduino.cc/en/Guide/Windows](http://arduino.cc/en/Guide/Windows)
+[http://arduino.cc/en/Guide/Windows](http://arduino.cc/en/Guide/Windows)
 
 ####Linux and Mac OS X
 
@@ -56,7 +56,7 @@ Either use git or download and uncompress zip file.
 
 Install git if necessary:
 
-    [http://git-scm.com/book/en/Getting-Started-Installing-Git](http://git-scm.com/book/en/Getting-Started-Installing-Git)
+[http://git-scm.com/book/en/Getting-Started-Installing-Git](http://git-scm.com/book/en/Getting-Started-Installing-Git)
 
 Clone this repository:
 
@@ -66,12 +66,12 @@ git clone https://github.com/JaneliaSciComp/matlab_arduino_device.git
 
 ####Using zip file
 
-    [https://github.com/JaneliaSciComp/matlab_arduino_device/archive/master.zip](https://github.com/JaneliaSciComp/matlab_arduino_device/archive/master.zip)
+[https://github.com/JaneliaSciComp/matlab_arduino_device/archive/master.zip](https://github.com/JaneliaSciComp/matlab_arduino_device/archive/master.zip)
 
 ###Setup Matlab
 
-Add the following directory (inside this downloaded repository) and all
-its subdirectories to the Matlab path:
+Find the path of this directory inside this downloaded repository and
+add it and all its subdirectories to the Matlab path:
 
     ../arduino_device/
 
@@ -82,7 +82,7 @@ Connect Arduino device to computer with a USB cable.
 Find serial port of connected device. Use Arduino environment to help
 find port or read more details here:
 
-    [http://arduino.cc/en/Guide/HomePage](http://arduino.cc/en/Guide/HomePage)
+[http://arduino.cc/en/Guide/HomePage](http://arduino.cc/en/Guide/HomePage)
 
 ####Windows:
 
