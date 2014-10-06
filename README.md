@@ -19,7 +19,7 @@ For help type "help ArduinoDevice" from the Matlab command line.
 
 See example m files in:
 
-<../arduino_device/examples/>
+[../arduino_device/examples/](../arduino_device/examples/)
 
 ```matlab
 serial_port = '/dev/ttyACM0'     % example Linux serial port
