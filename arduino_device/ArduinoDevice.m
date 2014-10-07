@@ -248,7 +248,7 @@ classdef ArduinoDevice < handle
                     rspStruct = loadjson(rspStrJson);
                 catch ME
                     causeME = MException( ...
-                        'ArduinoDevice:unableToPaseJSON', ...
+                        'ArduinoDevice:unableToParseJSON', ...
                         'Unable to parse device response' ...
                         );
                     ME = addCause(ME, causeME);
@@ -336,7 +336,7 @@ classdef ArduinoDevice < handle
                     throw(ME);
                 end
             end
-            cmdStr = sprintf('%s]\n',cmdStr);
+            cmdStr = sprintf('%s]',cmdStr);
         end
 
         function flag = isDynamicMethod(obj,S)
