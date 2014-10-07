@@ -336,7 +336,7 @@ classdef ArduinoDevice < handle
                     throw(ME);
                 end
             end
-            cmdStr = sprintf('%s]',cmdStr);
+            cmdStr = sprintf('%s]\n',cmdStr);
         end
 
         function flag = isDynamicMethod(obj,S)
