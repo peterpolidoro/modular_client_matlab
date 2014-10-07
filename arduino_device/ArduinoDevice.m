@@ -234,7 +234,7 @@ classdef ArduinoDevice < handle
                     fprintf('%c',cmdStr);
                     fprintf('\n');
                 end
-                fprintf(obj.dev,'%c\n',cmdStr);
+                fprintf(obj.dev,cmdStr);
 
                 % Get response as json string and parse
                 rspStrJson = fscanf(obj.dev,'%c');
