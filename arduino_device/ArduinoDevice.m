@@ -49,12 +49,13 @@
 %
 % Notes:
 %
-%  * Find serial port of Arduino board connected with a USB cable
+%  * Find serial port of Arduino board connected with a USB cable.
 %    Use Arduino environment to help find port or read more details
 %    here: http://arduino.cc/en/Guide/HomePage
 %    Windows:
-%      Typically 'COM3' or higher. Use 'Device Manager' and look
-%      under 'Ports'.
+%      Use command getAvailableComPorts()
+%      Or use 'Device Manager' and look under 'Ports'.
+%      Typically 'COM3' or higher.
 %    Mac OS X:
 %      Typically something like '/dev/tty.usbmodem'
 %    Linux:
@@ -63,9 +64,15 @@
 %
 % Typical Usage:
 %
+%   % Linux and Mac OS X
+%   ls /dev/tty*
 %   serial_port = '/dev/ttyACM0'     % example Linux serial port
 %   serial_port = '/dev/tty.usbmodem262471' % example Mac OS X serial port
+%
+%   % Windows
+%   findAvailableComPorts()
 %   serial_port = 'COM4'             % example Windows serial port
+%
 %   dev = ArduinoDevice(serial_port) % creates a device object
 %   dev.open()                       % opens a serial connection to the device
 %   dev.getDevInfo()                 % get device information
@@ -73,9 +80,6 @@
 %   dev.close()                      % close serial connection
 %   delete(dev)                      % deletes the device
 %
-%
-
-
 
 classdef ArduinoDevice < handle
 

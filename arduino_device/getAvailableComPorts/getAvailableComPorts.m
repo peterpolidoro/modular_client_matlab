@@ -1,9 +1,9 @@
-function lCOM_Port = getAvailableComPort()
-% function lCOM_Port = getAvailableComPort()
+function lCOM_Port = getAvailableComPorts()
+% function lCOM_Port = getAvailableComPorts()
 % Return a Cell Array of COM port names available on your computer
 
 try
-    s=serial('IMPOSSIBLE_NAME_ON_PORT');fopen(s); 
+    s=serial('IMPOSSIBLE_NAME_ON_PORT');fopen(s);
 catch
     lErrMsg = lasterr;
 end
@@ -36,11 +36,11 @@ for i=1:numel(lIndexDot)+1
     % First One
     if (i==1)
         lCOM_Port{1,1} = lComStr(1:lIndexDot(i)-1);
-    % Last One
+        % Last One
     elseif (i==numel(lIndexDot)+1)
-        lCOM_Port{i,1} = lComStr(lIndexDot(i-1)+2:end);       
-    % Others
+        lCOM_Port{i,1} = lComStr(lIndexDot(i-1)+2:end);
+        % Others
     else
         lCOM_Port{i,1} = lComStr(lIndexDot(i-1)+2:lIndexDot(i)-1);
     end
-end    
+end

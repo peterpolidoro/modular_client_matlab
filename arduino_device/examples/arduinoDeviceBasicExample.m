@@ -6,8 +6,9 @@ function arduinoDeviceBasicExample(port)
 %    Use Arduino environment to help find port or read more details
 %    here: http://arduino.cc/en/Guide/HomePage
 %    Windows:
-%      Typically 'com3' or higher. Use 'Device Manager' and look
-%      under 'Ports'.
+%      Use command getAvailableComPorts()
+%      Or use 'Device Manager' and look under 'Ports'.
+%      Typically 'COM3' or higher.
 %    Mac OS X:
 %      Typically something like '/dev/tty.usbmodem'
 %    Linux:
@@ -15,6 +16,7 @@ function arduinoDeviceBasicExample(port)
 %
 % Usage: (replace 'COM5' with the serial port of your device)
 %
+% findAvailableComPorts()
 % arduinoDeviceBasicExample('COM5')
 %
 
