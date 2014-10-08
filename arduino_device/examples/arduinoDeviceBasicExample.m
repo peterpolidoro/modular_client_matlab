@@ -16,7 +16,7 @@ function arduinoDeviceBasicExample(port)
 %
 % Usage: (replace 'COM5' with the serial port of your device)
 %
-% findAvailableComPorts()
+% getAvailableComPorts()
 % arduinoDeviceBasicExample('COM5')
 %
 

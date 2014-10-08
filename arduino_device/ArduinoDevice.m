@@ -70,12 +70,11 @@
 %   serial_port = '/dev/tty.usbmodem262471' % example Mac OS X serial port
 %
 %   % Windows
-%   findAvailableComPorts()
+%   getAvailableComPorts()
 %   serial_port = 'COM4'             % example Windows serial port
 %
 %   dev = ArduinoDevice(serial_port) % creates a device object
 %   dev.open()                       % opens a serial connection to the device
-%   dev.getDevInfo()                 % get device information
 %   dev.getCommmands()               % get device commands
 %   dev.close()                      % close serial connection
 %   delete(dev)                      % deletes the device
