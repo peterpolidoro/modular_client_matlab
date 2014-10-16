@@ -1,10 +1,8 @@
-function arduinoDeviceBasicExample(port)
-% arduinoDeviceBasicExample: demonstrates basic use of the
-% ArduinoDevice class.
+function remoteDeviceBasicExample(port)
+% remoteDeviceBasicExample: demonstrates basic use of the
+% RemoteDevice class.
 %
-%  * Find serial port of Arduino board connected with a USB cable
-%    Use Arduino environment to help find port or read more details
-%    here: http://arduino.cc/en/Guide/HomePage
+%  * Find serial port of remote device connected with a USB cable.
 %    Windows:
 %      Use command getAvailableComPorts()
 %      Or use 'Device Manager' and look under 'Ports'.
@@ -17,22 +15,22 @@ function arduinoDeviceBasicExample(port)
 % Usage: (replace 'COM5' with the serial port of your device)
 %
 % getAvailableComPorts()
-% arduinoDeviceBasicExample('COM5')
+% remoteDeviceBasicExample('COM5')
 %
 
-    % Create the Arduino device object, open serial
+    % Create the Remote device object, open serial
     % connection and display device info.
-    fprintf('Opening Arduino device...\n');
-    dev = ArduinoDevice(port);
+    fprintf('Opening Remote device...\n');
+    dev = RemoteDevice(port);
     dev.open();
-    fprintf('Arduino Device Info:');
+    fprintf('Remote Device Info:');
     dev.getDevInfo()
 
     % Pause for a little bit for added dramma
     pause(1.0)
 
     % Print dynamic methods
-    dev.getCommands()
+    dev.getMethods()
     fprintf('\n');
 
     % Clean up -

@@ -1,6 +1,6 @@
 %
-% ArduinoDevice - matlab serial interface for controlling and
-% communicating with Arduino devices running the appropriate
+% RemoteDevice - matlab serial interface for controlling and
+% communicating with remote devices running the appropriate
 % firmware.
 %
 % Public properties
@@ -11,12 +11,12 @@
 %   (Dependent)
 %   * isOpen    = true is serial connection to device is open, false otherwire
 %   * devInfo   = device information structure (model number, serial number)
-%   * cmdIds    = structure of command identification numbers retrieved from device.
-%   * rspCodes  = structure of response codes retreived from device.
+%   * methodIds = structure of method identification numbers retrieved from device.
+%   * responseCodes  = structure of response codes retrieved from device.
 %
 %
-% Note, in what follows 'dev' is assumed to be an instance of the ArduinoDevice class.
-% dev = ArduinoDevice(portName)
+% Note, in what follows 'dev' is assumed to be an instance of the RemoteDevice class.
+% dev = RemoteDevice(portName)
 %
 % Regular (public) class methods
 % -----------------------------
@@ -30,9 +30,9 @@
 %   * delete - deletes instance of device object.
 %     Usage: dev.delete() or delete(dev)
 %
-%   * getCommands - prints the names of all dynamically generated class
-%     methods. Note, the device must be opened for this command to work.
-%     Usage: dev.getCommands()
+%   * getMethods - prints the names of all dynamically generated class
+%     methods. Note, the device must be opened for this method to work.
+%     Usage: dev.getMethods()
 %
 %
 % Dynamically generated (public) class methods
@@ -44,13 +44,14 @@
 %     model number.
 %     Usage: infoStruct = dev.getDevInfo()
 %
-%   * setArduinoSerialNumber - sets the serial number of the device.
+%   * setSerialNumber - sets the serial number of the device.
 %     Usage: dev.setSerialNumber(serialNum)
 %
 % Notes:
 %
-%  * Find serial port of Arduino board connected with a USB cable.
-%    Use Arduino environment to help find port or read more details
+%  * Find serial port of remote device connected with a USB cable.
+%    When the remote device is Arduino-based, you can use the
+%    Arduino environment to help find port. Read more details
 %    here: http://arduino.cc/en/Guide/HomePage
 %    Windows:
 %      Use command getAvailableComPorts()
@@ -73,14 +74,14 @@
 %   getAvailableComPorts()
 %   serial_port = 'COM4'             % example Windows serial port
 %
-%   dev = ArduinoDevice(serial_port) % creates a device object
+%   dev = RemoteDevice(serial_port)  % creates a device object
 %   dev.open()                       % opens a serial connection to the device
-%   dev.getCommmands()               % get device commands
+%   dev.getMethods()                 % get device methods
 %   dev.close()                      % close serial connection
 %   delete(dev)                      % deletes the device
 %
 
-classdef ArduinoDevice < handle
+classdef RemoteDevice < handle
 
     properties
         dev = [];
@@ -88,9 +89,9 @@ classdef ArduinoDevice < handle
     end
 
     properties (Access=private)
-        cmdIdStruct = [];
+        methodIdStruct = [];
         devInfoStruct = [];
-        rspCodeStruct = [];
+        responseCodeStruct = [];
     end
 
     properties (Constant, Access=private)
@@ -106,10 +107,10 @@ classdef ArduinoDevice < handle
         waitPauseDt = 0.25;
         powerOnDelay = 1.5;
 
-        % Command ids for basic commands.
-        cmdIdGetDevInfo = 0;
-        cmdIdGetCmds = 1;
-        cmdIdGetRspCodes = 2;
+        % Method ids for basic methods.
+        methodIdGetDevInfo = 0;
+        methodIdGetMethods = 1;
+        methodIdGetResponseCodes = 2;
 
     end
 
@@ -117,14 +118,14 @@ classdef ArduinoDevice < handle
     properties (Dependent)
         isOpen;
         devInfo;
-        cmdIds;
-        rspCodes;
+        methodIds;
+        responseCodes;
     end
 
     methods
 
-        function obj = ArduinoDevice(port)
-        % ArduinoDevice - class constructor.
+        function obj = RemoteDevice(port)
+        % RemoteDevice - class constructor.
             obj.dev = serial( ...
                 port, ...
                 'baudrate', obj.baudrate, ...
@@ -142,9 +143,9 @@ classdef ArduinoDevice < handle
             if obj.isOpen == false
                 fopen(obj.dev);
                 pause(obj.resetDelay);
-                obj.createRspCodeStruct();
+                obj.createResponseCodeStruct();
                 obj.createDevInfoStruct();
-                obj.createCmdIdStruct();
+                obj.createMethodIdStruct();
             end
         end
 
@@ -174,14 +175,14 @@ classdef ArduinoDevice < handle
             end
         end
 
-        function getCommands(obj)
-        % getCommands - prints all dynamically generated class methods.
-            cmdIdNames = fieldnames(obj.cmdIdStruct);
+        function getMethods(obj)
+        % getMethods - prints all dynamically generated class methods.
+            methodIdNames = fieldnames(obj.methodIdStruct);
             fprintf('\n');
-            fprintf('Arduino Device Commands\n');
+            fprintf('Remote Device Methods\n');
             fprintf('-----------------------\n');
-            for i = 1:length(cmdIdNames)
-                fprintf('%s\n',cmdIdNames{i});
+            for i = 1:length(methodIdNames)
+                fprintf('%s\n',methodIdNames{i});
             end
         end
 
@@ -191,19 +192,19 @@ classdef ArduinoDevice < handle
         end
 
 
-        function cmdIds = get.cmdIds(obj)
-        % get.cmdIds - returns the structure of command Ids.
-            cmdIds = obj.cmdIdStruct;
+        function methodIds = get.methodIds(obj)
+        % get.methodIds - returns the structure of method Ids.
+            methodIds = obj.methodIdStruct;
         end
 
-        function rspCodes = get.rspCodes(obj)
-        % get.rspCodes - returns the structure of device response codes.
-            rspCodes = obj.rspCodeStruct;
+        function responseCodes = get.responseCodes(obj)
+        % get.responseCodes - returns the structure of device response codes.
+            responseCodes = obj.responseCodeStruct;
         end
 
         function varargout = subsref(obj,S)
         % subsref - overloaded subsref function to enable dynamic generation of
-        % class methods from the cmdIdStruct structure.
+        % class methods from the methodIdStruct structure.
             val = [];
             if obj.isDynamicMethod(S)
                 val = obj.dynamicMethodFcn(S);
@@ -220,75 +221,75 @@ classdef ArduinoDevice < handle
         end
 
 
-        function rspStruct = sendCmd(obj,cmdId,varargin)
-        % sendCmd - sends a command to device and reads the device's response.
-        % The device responds to all commands with a serialized json string.
+        function responseStruct = sendRequest(obj,methodId,varargin)
+        % sendRequest - sends a request to the device and reads the device's response.
+        % The device responds to all requests with a serialized json string.
         % This string is parsed into a Matlab structure.
         %
         % Arguments:
-        %  cmdId    = the Id number of the command
-        %  varagin  = any additional arguments required by the command
+        %  methodId = the Id number of the method
+        %  varagin  = any additional arguments required by the request
             if obj.isOpen
 
-                % Send command to device
-                cmdStr = obj.createCmdStr(cmdId, varargin);
+                % Send request to device
+                request = obj.createRequest(methodId, varargin);
                 if obj.debug
-                    fprintf('cmdStr: ');
-                    fprintf('%c',cmdStr);
+                    fprintf('request: ');
+                    fprintf('%c',request);
                     fprintf('\n');
                 end
-                fprintf(obj.dev,cmdStr);
+                fprintf(obj.dev,request);
 
                 % Get response as json string and parse
-                rspStrJson = fscanf(obj.dev,'%c');
+                response = fscanf(obj.dev,'%c');
                 if obj.debug
-                    fprintf('rspStr: ');
-                    fprintf('%c',rspStrJson);
+                    fprintf('response: ');
+                    fprintf('%c',response);
                     fprintf('\n');
                 end
 
                 try
-                    rspStruct = loadjson(rspStrJson);
+                    responseStruct = loadjson(response);
                 catch ME
                     causeME = MException( ...
-                        'ArduinoDevice:unableToParseJSON', ...
+                        'RemoteDevice:unableToParseJSON', ...
                         'Unable to parse device response' ...
                         );
                     ME = addCause(ME, causeME);
                     rethrow(ME);
                 end
 
-                % Check the returned cmd Id
+                % Check the returned method Id
                 try
-                    rspCmdId = rspStruct.cmd_id;
-                    rspStruct = rmfield(rspStruct, 'cmd_id');
+                    responseMethodId = responseStruct.method_id;
+                    responseStruct = rmfield(responseStruct, 'cmd_id');
                 catch ME
                     causeME = MException( ...
-                        'ArduinoDevice:MissingCommandId', ...
-                        'device response does not contain command Id' ...
+                        'RemoteDevice:MissingId', ...
+                        'device response does not contain id' ...
                         );
                     ME = addCause(ME, causeME);
                     rethrow(ME);
                 end
 
-                if rspCmdId ~= cmdId
+                if responseMethodId ~= methodId
                     msg = sprintf( ...
-                        'Command Id returned, %d, does not match that sent, %d', ...
-                        rspCmdId, ...
-                        cmdId ...
+                        'id returned, %d, does not match that sent, %d', ...
+                        responseMethodId, ...
+                        methodId ...
                         );
-                    ME = MException('ArduinoDevice:cmdIDDoesNotMatch', msg);
+                    ME = MException('RemoteDevice:idDoesNotMatch', msg);
                     throw(ME);
                 end
 
 
                 % Get response status
                 try
-                    rspStatus = rspStruct.status;
-                    rspStruct = rmfield(rspStruct,'status');
+                    responseStatus = responseStruct.status;
+                    responseStruct = rmfield(responseStruct,'status');
                 catch ME
                     causeME = MException( ...
-                        'ArduinoDevice:MissingStatus', ...
+                        'RemoteDevice:MissingStatus', ...
                         'Device response does not contain status' ...
                         );
                     ME = addCause(ME, causeME);
@@ -296,23 +297,23 @@ classdef ArduinoDevice < handle
                 end
 
                 % Check response status
-                if ~isempty(obj.rspCodeStruct)
-                    if rspStatus ~= obj.rspCodeStruct.rsp_success
+                if ~isempty(obj.responseCodeStruct)
+                    if responseStatus ~= obj.responseCodeStruct.response_success
                         errMsg = 'device responded with error';
                         try
-                            errMsg = sprintf('%s, %s',errMsg, rspStruct.err_msg);
+                            errMsg = sprintf('%s, %s',errMsg, responseStruct.err_msg);
                         catch ME
                             errMsg = sprintf('%s, but error message is missing', errMsg);
                         end
-                        ME = MException('ArduinoDevice:DeviceResponseError', errMsg);
+                        ME = MException('RemoteDevice:DeviceResponseError', errMsg);
                         throw(ME);
                     end
                 end
 
             else
                 ME = MException( ...
-                    'ArduinoDevice:DeviceNotOpen', ...
-                    'connection must be open to send command to device' ...
+                    'RemoteDevice:DeviceNotOpen', ...
+                    'connection must be open to send method to device' ...
                     );
                 throw(ME);
             end
@@ -322,37 +323,37 @@ classdef ArduinoDevice < handle
 
     methods (Access=private)
 
-        function cmdStr = createCmdStr(obj, cmdId, cmdArgs)
-        % createCmdStr - create a command string for sending to the device given
-        % the cmdId number and a cell array of the commands arguments.
-            cmdStr = sprintf('[%d',uint16(cmdId));
-            for i=1:length(cmdArgs)
-                arg = cmdArgs{i};
+        function request = createRequest(obj, methodId, requestArgs)
+        % createRequest - create a request for sending to the device given
+        % the methodId and a cell array of the request arguments.
+            request = sprintf('[%d',uint16(methodId));
+            for i=1:length(requestArgs)
+                arg = requestArgs{i};
                 switch class(arg)
                   case 'double'
-                    cmdStr = sprintf('%s, %f', cmdStr, arg);
+                    request = sprintf('%s, %f', request, arg);
                   case 'char'
-                    cmdStr = sprintf('%s, %s', cmdStr, arg);
+                    request = sprintf('%s, %s', request, arg);
                   otherwise
-                    errMsg = sprintf('unknown type, %s, in command', class(arg));
-                    ME = MException('ArduinoDevice:UnknownType', errMsg);
+                    errMsg = sprintf('unknown type, %s, in method', class(arg));
+                    ME = MException('RemoteDevice:UnknownType', errMsg);
                     throw(ME);
                 end
             end
-            cmdStr = sprintf('%s]',cmdStr);
+            request = sprintf('%s]',request);
         end
 
         function flag = isDynamicMethod(obj,S)
         % isDynamicMethod - used in the subsred function to determine whether
         % or not the method is dynamically generated. This is determined by
         % whether or not the name of the method given method is also the name
-        % of a field in the cmdIdStruct.
+        % of a field in the methodIdStruct.
         %
         % Arguments:
         %  S = 'type' + 'subs' stucture passed to subsref function
             flag = false;
-            if ~isempty(obj.cmdIdStruct)
-                if S(1).type == '.' & isfield(obj.cmdIdStruct,S(1).subs)
+            if ~isempty(obj.methodIdStruct)
+                if S(1).type == '.' & isfield(obj.methodIdStruct,S(1).subs)
                     flag= true;
                 end
             end
@@ -361,43 +362,43 @@ classdef ArduinoDevice < handle
         function rtnVal = dynamicMethodFcn(obj,S)
         % dynamicMethodFcn - implements a the dynamically generated class methods.
 
-        % Get command name, command args and command id number
-            cmdName = S(1).subs;
+        % Get method name, method args and method id number
+            methodName = S(1).subs;
             try
-                cmdArgs = S(2).subs;
+                requestArgs = S(2).subs;
             catch
-                cmdArgs = {};
+                requestArgs = {};
             end
-            cmdId = obj.cmdIdStruct.(cmdName);
+            methodId = obj.methodIdStruct.(methodName);
 
-            % Convert command arguments from structure if required
-            %if length(cmdArgs) == 1 && strcmp(class(cmdArgs{1}), 'struct')
-            %    cmdArgs = obj.convertArgStructToCell(cmdArgs{1});
+            % Convert method arguments from structure if required
+            %if length(requestArgs) == 1 && strcmp(class(requestArgs{1}), 'struct')
+            %    requestArgs = obj.convertArgStructToCell(requestArgs{1});
             %end
 
-            % Send command and get response
-            rspStruct = obj.sendCmd(cmdId,cmdArgs{:});
+            % Send method and get response
+            responseStruct = obj.sendRequest(methodId,requestArgs{:});
 
             % Convert response into return value.
-            rspFieldNames = fieldnames(rspStruct);
-            if length(rspFieldNames) == 0
+            responseFieldNames = fieldnames(responseStruct);
+            if length(responseFieldNames) == 0
                 rtnVal = [];
-            elseif length(rspFieldNames) == 1;
-                rtnVal = rspStruct.(rspFieldNames{1});
+            elseif length(responseFieldNames) == 1;
+                rtnVal = responseStruct.(responseFieldNames{1});
             else
                 emptyFlag = true;
-                for i = 1:length(rspFieldNames)
-                    name = rspFieldNames{i};
-                    value = rspStruct.(name);
+                for i = 1:length(responseFieldNames)
+                    name = responseFieldNames{i};
+                    value = responseStruct.(name);
                     if ~isempty(value)
                         emptyFlag = false;
                     end
                 end
                 % Return structure or if only fieldnames return cell array of fieldnames
                 if ~emptyFlag
-                    rtnVal = rspStruct;
+                    rtnVal = responseStruct;
                 else
-                    rtnVal = rspFieldNames;
+                    rtnVal = responseFieldNames;
                     for i = 1:length(rtnVal)
                         name = rtnVal{i};
                         % Convert '-' character back to human readable
@@ -413,40 +414,40 @@ classdef ArduinoDevice < handle
             end
         end
 
-        function createCmdIdStruct(obj)
-        % createCmdIdStruct - gets structure of command Ids from device.
-            obj.cmdIdStruct = obj.sendCmd(obj.cmdIdGetCmds);
+        function createMethodIdStruct(obj)
+        % createMethodIdStruct - gets structure of method Ids from device.
+            obj.methodIdStruct = obj.sendRequest(obj.methodIdGetMethods);
         end
 
-        function createRspCodeStruct(obj)
-        % createRspCodeStruct - gets structure of response codes from the device.
-            obj.rspCodeStruct = obj.sendCmd(obj.cmdIdGetRspCodes);
+        function createResponseCodeStruct(obj)
+        % createResponseCodeStruct - gets structure of response codes from the device.
+            obj.responseCodeStruct = obj.sendRequest(obj.methodIdGetResponseCodes);
         end
 
         function createDevInfoStruct(obj)
         % createDevInfoStruct - get device information struture from device.
-            obj.devInfoStruct = obj.sendCmd(obj.cmdIdGetDevInfo);
+            obj.devInfoStruct = obj.sendRequest(obj.methodIdGetDevInfo);
         end
 
-        %function cmdArgs = convertArgStructToCell(obj,argStruct)
-        % Converts a command argument from a structure to a cell array. Note,
+        %function requestArgs = convertArgStructToCell(obj,argStruct)
+        % Converts a method argument from a structure to a cell array. Note,
         % the structure must have fields which are either the axis names or
         % the dimension names.
-        %    cmdArgs = {};
+        %    requestArgs = {};
         %    argFieldNames = fieldnames(argStruct);
         %    if isCellEqual(obj.orderedAxisNames,argFieldNames)
         %        orderedNames = obj.orderedAxisNames;
         %    elseif isCellEqual(obj.orderedDimNames,argFieldNames)
         %        orderedNames = obj.orderedDimNames;
         %    else
-        %        errMsg = 'unknown structure as command argument';
-        %        ME = MException('ArduinoDevice:UnknownType', errMsg);
+        %        errMsg = 'unknown structure as method argument';
+        %        ME = MException('RemoteDevice:UnknownType', errMsg);
         %        throw(ME);
 
         %    end
         %    for i = 1:length(orderedNames)
         %        name = orderedNames{i};
-        %        cmdArgs{i} = argStruct.(name);
+        %        requestArgs{i} = argStruct.(name);
         %    end
         %end
 
