@@ -180,7 +180,7 @@ classdef RemoteDevice < handle
             methodIdNames = fieldnames(obj.methodIdStruct);
             fprintf('\n');
             fprintf('Remote Device Methods\n');
-            fprintf('-----------------------\n');
+            fprintf('---------------------\n');
             for i = 1:length(methodIdNames)
                 fprintf('%s\n',methodIdNames{i});
             end
@@ -261,12 +261,12 @@ classdef RemoteDevice < handle
 
                 % Check the returned method Id
                 try
-                    responseMethodId = responseStruct.cmd_id;
-                    responseStruct = rmfield(responseStruct, 'cmd_id');
+                    responseMethodId = responseStruct.method_id;
+                    responseStruct = rmfield(responseStruct, 'method_id');
                 catch ME
                     causeME = MException( ...
-                        'RemoteDevice:MissingId', ...
-                        'device response does not contain id' ...
+                        'RemoteDevice:MissingMethodId', ...
+                        'device response does not contain method_id' ...
                         );
                     ME = addCause(ME, causeME);
                     rethrow(ME);
@@ -274,11 +274,11 @@ classdef RemoteDevice < handle
 
                 if responseMethodId ~= methodId
                     msg = sprintf( ...
-                        'id returned, %d, does not match that sent, %d', ...
+                        'method_id returned, %d, does not match that sent, %d', ...
                         responseMethodId, ...
                         methodId ...
                         );
-                    ME = MException('RemoteDevice:idDoesNotMatch', msg);
+                    ME = MException('RemoteDevice:methodIdDoesNotMatch', msg);
                     throw(ME);
                 end
 
@@ -298,10 +298,10 @@ classdef RemoteDevice < handle
 
                 % Check response status
                 if ~isempty(obj.responseCodeStruct)
-                    if responseStatus ~= obj.responseCodeStruct.rsp_success
+                    if responseStatus ~= obj.responseCodeStruct.response_success
                         errMsg = 'device responded with error';
                         try
-                            errMsg = sprintf('%s, %s',errMsg, responseStruct.err_msg);
+                            errMsg = sprintf('%s, %s',errMsg, responseStruct.error_message);
                         catch ME
                             errMsg = sprintf('%s, but error message is missing', errMsg);
                         end
