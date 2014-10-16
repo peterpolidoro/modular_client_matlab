@@ -261,7 +261,7 @@ classdef RemoteDevice < handle
 
                 % Check the returned method Id
                 try
-                    responseMethodId = responseStruct.method_id;
+                    responseMethodId = responseStruct.cmd_id;
                     responseStruct = rmfield(responseStruct, 'cmd_id');
                 catch ME
                     causeME = MException( ...
@@ -298,7 +298,7 @@ classdef RemoteDevice < handle
 
                 % Check response status
                 if ~isempty(obj.responseCodeStruct)
-                    if responseStatus ~= obj.responseCodeStruct.response_success
+                    if responseStatus ~= obj.responseCodeStruct.rsp_success
                         errMsg = 'device responded with error';
                         try
                             errMsg = sprintf('%s, %s',errMsg, responseStruct.err_msg);
