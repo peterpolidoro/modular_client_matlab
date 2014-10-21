@@ -35,6 +35,10 @@ dev.close()                      % close serial connection
 delete(dev)                      % deletes the device
 ```
 
+More Detailed Examples:
+
+<https://github.com/JaneliaSciComp/arduino_remote_device>
+
 ##Installation
 
 ###Drivers
