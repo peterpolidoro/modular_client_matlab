@@ -32,7 +32,7 @@
 %   * getDeviceInfo - returns the device information.
 %     e.g. name, model number, serial number, firmware number
 %     Note, the device must be opened for this method to work.
-%     Usage: dev.getDeviceInfo()
+%     Usage: device_info = dev.getDeviceInfo()
 %
 %   * getMethods - prints the names of all dynamically generated class
 %     methods. Note, the device must be opened for this method to work.
@@ -67,7 +67,7 @@
 %
 %   dev = RemoteDevice(serial_port)  % creates a device object
 %   dev.open()                       % opens a serial connection to the device
-%   dev.getDeviceInfo()              % get device information
+%   device_info = dev.getDeviceInfo()% get device information
 %   dev.getMethods()                 % get device methods
 %   dev.close()                      % close serial connection
 %   delete(dev)                      % deletes the device
