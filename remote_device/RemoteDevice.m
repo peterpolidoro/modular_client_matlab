@@ -10,7 +10,6 @@
 %
 %   (Dependent)
 %   * isOpen    = true is serial connection to device is open, false otherwire
-%   * devInfo   = device information structure (model number, serial number)
 %   * methodIds = structure of method identification numbers retrieved from device.
 %   * responseCodes  = structure of response codes retrieved from device.
 %
@@ -30,22 +29,14 @@
 %   * delete - deletes instance of device object.
 %     Usage: dev.delete() or delete(dev)
 %
+%   * getDeviceInfo - returns the device information.
+%     e.g. name, model number, serial number, firmware number
+%     Note, the device must be opened for this method to work.
+%     Usage: dev.getDeviceInfo()
+%
 %   * getMethods - prints the names of all dynamically generated class
 %     methods. Note, the device must be opened for this method to work.
 %     Usage: dev.getMethods()
-%
-%
-% Dynamically generated (public) class methods
-% ---------------------------------------------
-%
-%  Note, the serial connection to the device must be open for these methods to exist.
-%
-%   * getDevInfo - returns structure containing device information, e.g. serial number,
-%     model number.
-%     Usage: infoStruct = dev.getDevInfo()
-%
-%   * setSerialNumber - sets the serial number of the device.
-%     Usage: dev.setSerialNumber(serialNum)
 %
 % Notes:
 %
@@ -76,6 +67,7 @@
 %
 %   dev = RemoteDevice(serial_port)  % creates a device object
 %   dev.open()                       % opens a serial connection to the device
+%   dev.getDeviceInfo()              % get device information
 %   dev.getMethods()                 % get device methods
 %   dev.close()                      % close serial connection
 %   delete(dev)                      % deletes the device
@@ -90,7 +82,6 @@ classdef RemoteDevice < handle
 
     properties (Access=private)
         methodIdStruct = [];
-        devInfoStruct = [];
         responseCodeStruct = [];
     end
 
@@ -108,7 +99,7 @@ classdef RemoteDevice < handle
         powerOnDelay = 1.5;
 
         % Method ids for basic methods.
-        methodIdGetDevInfo = 0;
+        methodIdGetDeviceInfo = 0;
         methodIdGetMethods = 1;
         methodIdGetResponseCodes = 2;
 
@@ -117,7 +108,6 @@ classdef RemoteDevice < handle
 
     properties (Dependent)
         isOpen;
-        devInfo;
         methodIds;
         responseCodes;
     end
@@ -144,7 +134,6 @@ classdef RemoteDevice < handle
                 fopen(obj.dev);
                 pause(obj.resetDelay);
                 obj.createResponseCodeStruct();
-                obj.createDevInfoStruct();
                 obj.createMethodIdStruct();
             end
         end
@@ -175,6 +164,11 @@ classdef RemoteDevice < handle
             end
         end
 
+        function deviceInfoStruct = getDeviceInfo(obj)
+        % getDeviceInfo - returns device information
+            deviceInfoStruct = obj.sendRequest(obj.methodIdGetDeviceInfo);
+        end
+
         function getMethods(obj)
         % getMethods - prints all dynamically generated class methods.
             methodIdNames = fieldnames(obj.methodIdStruct);
@@ -185,12 +179,6 @@ classdef RemoteDevice < handle
                 fprintf('%s\n',methodIdNames{i});
             end
         end
-
-        function devInfo = get.devInfo(obj)
-        % get.devInfo - returns the device information structure.
-            devInfo = obj.devInfoStruct;
-        end
-
 
         function methodIds = get.methodIds(obj)
         % get.methodIds - returns the structure of method Ids.
@@ -423,33 +411,6 @@ classdef RemoteDevice < handle
         % createResponseCodeStruct - gets structure of response codes from the device.
             obj.responseCodeStruct = obj.sendRequest(obj.methodIdGetResponseCodes);
         end
-
-        function createDevInfoStruct(obj)
-        % createDevInfoStruct - get device information struture from device.
-            obj.devInfoStruct = obj.sendRequest(obj.methodIdGetDevInfo);
-        end
-
-        %function requestArgs = convertArgStructToCell(obj,argStruct)
-        % Converts a method argument from a structure to a cell array. Note,
-        % the structure must have fields which are either the axis names or
-        % the dimension names.
-        %    requestArgs = {};
-        %    argFieldNames = fieldnames(argStruct);
-        %    if isCellEqual(obj.orderedAxisNames,argFieldNames)
-        %        orderedNames = obj.orderedAxisNames;
-        %    elseif isCellEqual(obj.orderedDimNames,argFieldNames)
-        %        orderedNames = obj.orderedDimNames;
-        %    else
-        %        errMsg = 'unknown structure as method argument';
-        %        ME = MException('RemoteDevice:UnknownType', errMsg);
-        %        throw(ME);
-
-        %    end
-        %    for i = 1:length(orderedNames)
-        %        name = orderedNames{i};
-        %        requestArgs{i} = argStruct.(name);
-        %    end
-        %end
 
     end
 end
