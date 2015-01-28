@@ -1,8 +1,8 @@
-function remoteDeviceBasicExample(port)
-% remoteDeviceBasicExample: demonstrates basic use of the
-% RemoteDevice class.
+function modularDeviceBasicExample(port)
+% modularDeviceBasicExample: demonstrates basic use of the
+% ModularDevice class.
 %
-%  * Find serial port of remote device connected with a USB cable.
+%  * Find serial port of modular device connected with a USB cable.
 %    Windows:
 %      Use command getAvailableComPorts()
 %      Or use 'Device Manager' and look under 'Ports'.
@@ -15,15 +15,15 @@ function remoteDeviceBasicExample(port)
 % Usage: (replace 'COM5' with the serial port of your device)
 %
 % getAvailableComPorts()
-% remoteDeviceBasicExample('COM5')
+% modularDeviceBasicExample('COM5')
 %
 
-    % Create the Remote device object, open serial
+    % Create the Modular device object, open serial
     % connection and display device info.
-    fprintf('Opening Remote device...\n');
-    dev = RemoteDevice(port);
+    fprintf('Opening Modular device...\n');
+    dev = ModularDevice(port);
     dev.open();
-    fprintf('Remote Device Info:');
+    fprintf('Modular Device Info:');
     dev.getDevInfo()
 
     % Pause for a little bit for added dramma

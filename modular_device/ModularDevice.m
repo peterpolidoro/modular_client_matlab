@@ -1,6 +1,6 @@
 %
-% RemoteDevice - matlab serial interface for controlling and
-% communicating with remote devices running the appropriate
+% ModularDevice - matlab serial interface for controlling and
+% communicating with modular devices running the appropriate
 % firmware.
 %
 % Public properties
@@ -14,8 +14,8 @@
 %   * responseCodes  = structure of response codes retrieved from device.
 %
 %
-% Note, in what follows 'dev' is assumed to be an instance of the RemoteDevice class.
-% dev = RemoteDevice(portName)
+% Note, in what follows 'dev' is assumed to be an instance of the ModularDevice class.
+% dev = ModularDevice(portName)
 %
 % Regular (public) class methods
 % -----------------------------
@@ -40,8 +40,8 @@
 %
 % Notes:
 %
-%  * Find serial port of remote device connected with a USB cable.
-%    When the remote device is Arduino-based, you can use the
+%  * Find serial port of modular device connected with a USB cable.
+%    When the modular device is Arduino-based, you can use the
 %    Arduino environment to help find port. Read more details
 %    here: http://arduino.cc/en/Guide/HomePage
 %    Windows:
@@ -65,7 +65,7 @@
 %   getAvailableComPorts()
 %   serial_port = 'COM4'             % example Windows serial port
 %
-%   dev = RemoteDevice(serial_port)  % creates a device object
+%   dev = ModularDevice(serial_port)  % creates a device object
 %   dev.open()                       % opens a serial connection to the device
 %   device_info = dev.getDeviceInfo()% get device information
 %   dev.getMethods()                 % get device methods
@@ -73,7 +73,7 @@
 %   delete(dev)                      % deletes the device
 %
 
-classdef RemoteDevice < handle
+classdef ModularDevice < handle
 
     properties
         dev = [];
@@ -114,8 +114,8 @@ classdef RemoteDevice < handle
 
     methods
 
-        function obj = RemoteDevice(port)
-        % RemoteDevice - class constructor.
+        function obj = ModularDevice(port)
+        % ModularDevice - class constructor.
             obj.dev = serial( ...
                 port, ...
                 'baudrate', obj.baudrate, ...
@@ -173,7 +173,7 @@ classdef RemoteDevice < handle
         % getMethods - prints all dynamically generated class methods.
             methodIdNames = fieldnames(obj.methodIdStruct);
             fprintf('\n');
-            fprintf('Remote Device Methods\n');
+            fprintf('Modular Device Methods\n');
             fprintf('---------------------\n');
             for i = 1:length(methodIdNames)
                 fprintf('%s\n',methodIdNames{i});
@@ -240,7 +240,7 @@ classdef RemoteDevice < handle
                     responseStruct = loadjson(response);
                 catch ME
                     causeME = MException( ...
-                        'RemoteDevice:unableToParseJSON', ...
+                        'ModularDevice:unableToParseJSON', ...
                         'Unable to parse device response' ...
                         );
                     ME = addCause(ME, causeME);
@@ -253,7 +253,7 @@ classdef RemoteDevice < handle
                     responseStruct = rmfield(responseStruct, 'method_id');
                 catch ME
                     causeME = MException( ...
-                        'RemoteDevice:MissingMethodId', ...
+                        'ModularDevice:MissingMethodId', ...
                         'device response does not contain method_id' ...
                         );
                     ME = addCause(ME, causeME);
@@ -266,7 +266,7 @@ classdef RemoteDevice < handle
                         responseMethodId, ...
                         methodId ...
                         );
-                    ME = MException('RemoteDevice:methodIdDoesNotMatch', msg);
+                    ME = MException('ModularDevice:methodIdDoesNotMatch', msg);
                     throw(ME);
                 end
 
@@ -277,7 +277,7 @@ classdef RemoteDevice < handle
                     responseStruct = rmfield(responseStruct,'status');
                 catch ME
                     causeME = MException( ...
-                        'RemoteDevice:MissingStatus', ...
+                        'ModularDevice:MissingStatus', ...
                         'Device response does not contain status' ...
                         );
                     ME = addCause(ME, causeME);
@@ -293,14 +293,14 @@ classdef RemoteDevice < handle
                         catch ME
                             errMsg = sprintf('%s, but error message is missing', errMsg);
                         end
-                        ME = MException('RemoteDevice:DeviceResponseError', errMsg);
+                        ME = MException('ModularDevice:DeviceResponseError', errMsg);
                         throw(ME);
                     end
                 end
 
             else
                 ME = MException( ...
-                    'RemoteDevice:DeviceNotOpen', ...
+                    'ModularDevice:DeviceNotOpen', ...
                     'connection must be open to send method to device' ...
                     );
                 throw(ME);
@@ -324,7 +324,7 @@ classdef RemoteDevice < handle
                     request = sprintf('%s, %s', request, arg);
                   otherwise
                     errMsg = sprintf('unknown type, %s, in method', class(arg));
-                    ME = MException('RemoteDevice:UnknownType', errMsg);
+                    ME = MException('ModularDevice:UnknownType', errMsg);
                     throw(ME);
                 end
             end

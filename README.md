@@ -1,8 +1,8 @@
-matlab_remote_device
-====================
+modular_device_matlab
+=====================
 
-RemoteDevice.m - matlab serial interface for controlling and
-communicating with remote devices running the appropriate firmware.
+ModularDevice.m - matlab serial interface for controlling and
+communicating with modular devices running the appropriate firmware.
 
 Authors:
 
@@ -15,11 +15,11 @@ License:
 
 ##Example Usage
 
-For help type "help RemoteDevice" from the Matlab command line.
+For help type "help ModularDevice" from the Matlab command line.
 
 See example m files in:
 
-[./remote_device/examples/](./remote_device/examples/)
+[./modular_device/examples/](./modular_device/examples/)
 
 ```matlab
 % Linux and Mac OS X
@@ -28,7 +28,7 @@ serial_port = '/dev/ttyACM0'     % example Linux serial port
 serial_port = '/dev/tty.usbmodem262471' % example Mac OS X serial port
 % Windows getAvailableComPorts()
 serial_port = 'COM4'             % example Windows serial port
-dev = RemoteDevice(serial_port)  % creates a device object
+dev = ModularDevice(serial_port)  % creates a device object
 dev.open()                       % opens a serial connection to the device
 device_info = dev.getDeviceInfo()% get device info
 dev.getMethods()                 % get device methods
@@ -38,7 +38,7 @@ delete(dev)                      % deletes the device
 
 More Detailed Examples:
 
-<https://github.com/JaneliaSciComp/arduino_remote_device>
+<https://github.com/JaneliaSciComp/modular_device_arduino>
 
 ##Installation
 
@@ -46,7 +46,7 @@ More Detailed Examples:
 
 ####Windows
 
-When the remote device is Arduino-based, Windows needs drivers in
+When the modular device is Arduino-based, Windows needs drivers in
 order to communicate with the Arduino. Follow install instructions
 here:
 
@@ -69,27 +69,27 @@ Install git if necessary:
 Clone this repository:
 
 ```shell
-git clone https://github.com/JaneliaSciComp/matlab_remote_device.git
+git clone https://github.com/JaneliaSciComp/modular_device_matlab.git
 ```
 
 ####Using zip file
 
-<https://github.com/JaneliaSciComp/matlab_remote_device/archive/master.zip>
+<https://github.com/JaneliaSciComp/modular_device_matlab/archive/master.zip>
 
 ###Setup Matlab
 
 Find the path of this directory inside this downloaded repository and
 add it and all its subdirectories to the Matlab path:
 
-    ./remote_device/
+    ./modular_device/
 
 ###Setup Hardware
 
-Connect remote device to computer with a USB cable.
+Connect modular device to computer with a USB cable.
 
 Find serial port of connected device.
 
-When remote device is Arduino-based, you can use Remote environment to
+When modular device is Arduino-based, you can use Modular environment to
 help find port. Read more details here:
 
 <http://arduino.cc/en/Guide/HomePage>
