@@ -65,7 +65,7 @@
 %   getAvailableComPorts()
 %   serial_port = 'COM4'             % example Windows serial port
 %
-%   dev = ModularDevice(serial_port)  % creates a device object
+%   dev = ModularDevice(serial_port) % creates a device object
 %   dev.open()                       % opens a serial connection to the device
 %   device_info = dev.getDeviceInfo()% get device information
 %   dev.getMethods()                 % get device methods
