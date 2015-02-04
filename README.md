@@ -56,6 +56,13 @@ here:
 
 Extra drivers are unnecesary.
 
+On linux, you may need to add yourself to the group 'dialout' in order
+to have write permissions on the USB port:
+
+```shell
+sudo usermod -aG dialout <myuser>
+```
+
 ###Download this repository from github
 
 Either use git or download and uncompress zip file.
