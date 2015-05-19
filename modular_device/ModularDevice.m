@@ -319,7 +319,13 @@ classdef ModularDevice < handle
                 arg = requestArgs{i};
                 switch class(arg)
                   case 'double'
-                    request = sprintf('%s, %f', request, arg);
+                      if length(arg) == 1
+                          request = sprintf('%s, %f', request, arg);
+                      else
+                          arg = savejson('',arg);
+                          arg(isspace(arg)) = '';
+                          request = sprintf('%s, %s', request, arg);
+                      end
                   case 'char'
                     request = sprintf('%s, %s', request, arg);
                   otherwise
