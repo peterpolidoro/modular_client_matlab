@@ -28,7 +28,7 @@ serial_port = '/dev/ttyACM0'     % example Linux serial port
 serial_port = '/dev/tty.usbmodem262471' % example Mac OS X serial port
 % Windows getAvailableComPorts()
 serial_port = 'COM4'             % example Windows serial port
-dev = ModularDevice(serial_port)  % creates a device object
+dev = ModularDevice(serial_port) % creates a device object
 dev.open()                       % opens a serial connection to the device
 device_info = dev.getDeviceInfo()% get device info
 dev.getMethods()                 % get device methods
@@ -55,6 +55,13 @@ here:
 ####Linux and Mac OS X
 
 Extra drivers are unnecesary.
+
+On linux, you may need to add yourself to the group 'dialout' in order
+to have write permissions on the USB port:
+
+```shell
+sudo usermod -aG dialout $USER
+```
 
 ###Download this repository from github
 
