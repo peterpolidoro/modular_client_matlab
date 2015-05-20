@@ -196,15 +196,18 @@ classdef ModularDevice < handle
             val = [];
             if obj.isDynamicMethod(S)
                 val = obj.dynamicMethodFcn(S);
+                if ~(length(val) == 1) | ~isnan(val)
+                    varargout = {val};
+                end
             else
                 if nargout == 0
                     builtin('subsref',obj,S);
                 else
                     val = builtin('subsref',obj,S);
                 end
-            end
-            if ~isempty(val)
-                varargout = {val};
+                if ~isempty(val)
+                    varargout = {val};
+                end
             end
         end
 
@@ -376,7 +379,7 @@ classdef ModularDevice < handle
             % Convert response into return value.
             responseFieldNames = fieldnames(responseStruct);
             if length(responseFieldNames) == 0
-                rtnVal = [];
+                rtnVal = NaN;
             elseif length(responseFieldNames) == 1;
                 rtnVal = responseStruct.(responseFieldNames{1});
             else
