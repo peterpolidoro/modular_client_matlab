@@ -126,3 +126,26 @@ ls /dev
 
 Typically something like '/dev/ttyACM0'
 
+If you see this error:
+
+```matlab
+Error using serial/fopen (line 72)
+Open failed: Port: /dev/ttyACM0 is not available. Available ports: /dev/ttyS0.
+Use INSTRFIND to determine if other instrument objects are connected to the requested device.
+```
+
+You can use /dev/ttyACM0 but you need to let the library know that you
+will be using it. To specify the ports on your system, copy the
+java.opts file from this repository into the directory you start MATLAB.
+
+Restart Matlab and type:
+
+```matlab
+pwd
+```
+
+This will tell you the directory where you need to place the java.opts file.
+
+Save this file into that directory:
+
+[java.opts](java.opts)
