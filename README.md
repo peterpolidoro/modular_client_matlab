@@ -38,7 +38,7 @@ delete(dev)                      % deletes the device
 
 More Detailed Examples:
 
-<https://github.com/JaneliaSciComp/modular_device_arduino>
+<https://github.com/janelia-modular-devices/modular_device_arduino>
 
 ##Installation
 
@@ -76,12 +76,12 @@ Install git if necessary:
 Clone this repository:
 
 ```shell
-git clone https://github.com/JaneliaSciComp/modular_device_matlab.git
+git clone https://github.com/janelia-modular-devices/modular_device_matlab.git
 ```
 
 ####Using zip file
 
-<https://github.com/JaneliaSciComp/modular_device_matlab/archive/master.zip>
+<https://github.com/janelia-modular-devices/modular_device_matlab/archive/master.zip>
 
 ###Setup Matlab
 
