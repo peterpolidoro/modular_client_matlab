@@ -196,7 +196,7 @@ classdef ModularDevice < handle
             val = [];
             if obj.isDynamicMethod(S)
                 val = obj.dynamicMethodFcn(S);
-                if ~(length(val) == 1) | ~isnan(val)
+                if ~(length(val) == 1) | isstruct(val) | ~isnan(val)
                     varargout = {val};
                 end
             else
@@ -357,7 +357,7 @@ classdef ModularDevice < handle
         end
 
         function rtnVal = dynamicMethodFcn(obj,S)
-        % dynamicMethodFcn - implements a the dynamically generated class methods.
+        % dynamicMethodFcn - implements the dynamically generated class methods.
 
         % Get method name, method args and method id number
             methodName = S(1).subs;
