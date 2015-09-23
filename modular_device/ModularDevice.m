@@ -63,6 +63,9 @@
 %
 %   % Windows
 %   getAvailableComPorts()
+%   ans =
+%   'COM1'
+%   'COM4'
 %   serial_port = 'COM4'             % example Windows serial port
 %
 %   dev = ModularDevice(serial_port) % creates a device object

@@ -28,6 +28,9 @@ serial_port = '/dev/ttyACM0'     % example Linux serial port
 serial_port = '/dev/tty.usbmodem262471' % example Mac OS X serial port
 % Windows
 getAvailableComPorts()
+ans =
+'COM1'
+'COM4'
 serial_port = 'COM4'             % example Windows serial port
 %
 dev = ModularDevice(serial_port) % creates a device object
