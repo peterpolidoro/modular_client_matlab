@@ -1,5 +1,4 @@
-modular_device_matlab
-=====================
+#modular_device_matlab
 
 ModularDevice.m - matlab serial interface for controlling and
 communicating with modular devices running the appropriate firmware.
@@ -41,9 +40,9 @@ dev.close()                      % close serial connection
 delete(dev)                      % deletes the device
 ```
 
-More Detailed Examples:
+More Detailed Modular Device Information:
 
-<https://github.com/janelia-modular-devices/modular_device_arduino>
+<https://github.com/janelia-modular-devices/modular-devices>
 
 ##Installation
 
