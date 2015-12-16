@@ -290,8 +290,8 @@ classdef ModularDevice < handle
                         data, ...
                         code ...
                         );
-                    ME = MException('ModularDevice:Error', msg);
-                    throw(ME);
+                    causeME = MException('ModularDevice:Error', msg);
+                    throw(causeME);
                 catch ME
                 end
 
