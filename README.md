@@ -1,7 +1,8 @@
 #modular_device_matlab
 
-ModularDevice.m - matlab serial interface for controlling and
-communicating with modular devices running the appropriate firmware.
+ModularDevice.m - This is the Matlab modular device client library for
+    communicating with and calling remote methods on modular device
+    servers.
 
 Authors:
 

@@ -1,7 +1,6 @@
-%
-% ModularDevice - matlab serial interface for controlling and
-% communicating with modular devices running the appropriate
-% firmware.
+% ModularDevice - This is the Matlab modular device client library for
+%    communicating with and calling remote methods on modular device
+%    servers.matlab serial interface for controlling and
 %
 % Public properties
 % ------------------
@@ -11,7 +10,6 @@
 %   (Dependent)
 %   * isOpen    = true is serial connection to device is open, false otherwire
 %   * methodIds = structure of method identification numbers retrieved from device.
-%   * responseCodes  = structure of response codes retrieved from device.
 %
 %
 % Note, in what follows 'dev' is assumed to be an instance of the ModularDevice class.
@@ -30,7 +28,7 @@
 %     Usage: dev.delete() or delete(dev)
 %
 %   * getDeviceInfo - returns the device information.
-%     e.g. name, model number, serial number, firmware number
+%     e.g. name, model number, serial number, firmware version
 %     Note, the device must be opened for this method to work.
 %     Usage: device_info = dev.getDeviceInfo()
 %
@@ -85,7 +83,6 @@ classdef ModularDevice < handle
 
     properties (Access=private)
         methodIdStruct = [];
-        responseCodeStruct = [];
     end
 
     properties (Constant, Access=private)
@@ -104,7 +101,6 @@ classdef ModularDevice < handle
         % Method ids for basic methods.
         methodIdGetDeviceInfo = 0;
         methodIdGetMethods = 1;
-        methodIdGetResponseCodes = 2;
 
     end
 
@@ -112,7 +108,6 @@ classdef ModularDevice < handle
     properties (Dependent)
         isOpen;
         methodIds;
-        responseCodes;
     end
 
     methods
@@ -136,7 +131,6 @@ classdef ModularDevice < handle
             if obj.isOpen == false
                 fopen(obj.dev);
                 pause(obj.resetDelay);
-                obj.createResponseCodeStruct();
                 obj.createMethodIdStruct();
             end
         end
@@ -188,11 +182,6 @@ classdef ModularDevice < handle
             methodIds = obj.methodIdStruct;
         end
 
-        function responseCodes = get.responseCodes(obj)
-        % get.responseCodes - returns the structure of device response codes.
-            responseCodes = obj.responseCodeStruct;
-        end
-
         function varargout = subsref(obj,S)
         % subsref - overloaded subsref function to enable dynamic generation of
         % class methods from the methodIdStruct structure.
@@ -215,9 +204,9 @@ classdef ModularDevice < handle
         end
 
 
-        function responseStruct = sendRequest(obj,methodId,varargin)
-        % sendRequest - sends a request to the device and reads the device's response.
-        % The device responds to all requests with a serialized json string.
+        function result = sendRequest(obj,methodId,varargin)
+        % sendRequest - sends a request to the server and reads the server's response.
+        % The server responds to all requests with a serialized json string.
         % This string is parsed into a Matlab structure.
         %
         % Arguments:
@@ -247,61 +236,75 @@ classdef ModularDevice < handle
                 catch ME
                     causeME = MException( ...
                         'ModularDevice:unableToParseJSON', ...
-                        'Unable to parse device response' ...
+                        'Unable to parse server response' ...
                         );
                     ME = addCause(ME, causeME);
                     rethrow(ME);
                 end
 
-                % Check the returned method Id
+                % Check the returned id
                 try
-                    responseMethodId = responseStruct.method_id;
-                    responseStruct = rmfield(responseStruct, 'method_id');
+                    responseId = responseStruct.id;
+                    responseStruct = rmfield(responseStruct,'id');
                 catch ME
                     causeME = MException( ...
-                        'ModularDevice:MissingMethodId', ...
-                        'device response does not contain method_id' ...
+                        'ModularDevice:MissingId', ...
+                        'server response does not contain id member' ...
                         );
                     ME = addCause(ME, causeME);
                     rethrow(ME);
                 end
 
-                if responseMethodId ~= methodId
+                if responseId ~= methodId
                     msg = sprintf( ...
-                        'method_id returned, %d, does not match that sent, %d', ...
-                        responseMethodId, ...
+                        'response id: %d does not match request id: %d', ...
+                        responseId, ...
                         methodId ...
                         );
-                    ME = MException('ModularDevice:methodIdDoesNotMatch', msg);
+                    ME = MException('ModularDevice:idDoesNotMatch', msg);
                     throw(ME);
                 end
 
 
-                % Get response status
+                % Check if there is a response error
                 try
-                    responseStatus = responseStruct.status;
-                    responseStruct = rmfield(responseStruct,'status');
+                    responseError = responseStruct.error;
+                    try
+                        message = responseError.message;
+                    catch ME
+                        message = '';
+                    end
+                    try
+                         data = responseError.data;
+                     catch ME
+                         data = '';
+                    end
+                    try
+                        code = responseError.code;
+                    catch ME
+                        code = '';
+                    end
+                    msg = sprintf( ...
+                        '(from server) message: %s, data: %s, code: %s', ...
+                        message, ...
+                        data, ...
+                        code ...
+                        );
+                    ME = MException('ModularDevice:Error', msg);
+                    throw(ME);
+                catch ME
+                end
+
+                % Find result
+                try
+                    result = responseStruct.result;
                 catch ME
                     causeME = MException( ...
-                        'ModularDevice:MissingStatus', ...
-                        'Device response does not contain status' ...
+                        'ModularDevice:MissingResult', ...
+                        'server response does not contain result member' ...
                         );
                     ME = addCause(ME, causeME);
                     rethrow(ME);
-                end
-
-                % Check response status
-                if ~isempty(obj.responseCodeStruct)
-                    if responseStatus ~= obj.responseCodeStruct.response_success
-                        errMsg = 'device responded with error';
-                        try
-                            errMsg = sprintf('%s, %s',errMsg, responseStruct.error_message);
-                        catch ME
-                            errMsg = sprintf('%s, but error message is missing', errMsg);
-                        end
-                        ME = MException('ModularDevice:DeviceResponseError', errMsg);
-                        throw(ME);
-                    end
                 end
 
             else
@@ -376,27 +379,27 @@ classdef ModularDevice < handle
             %    requestArgs = obj.convertArgStructToCell(requestArgs{1});
             %end
 
-            % Send method and get response
-            responseStruct = obj.sendRequest(methodId,requestArgs{:});
+            % Send method and get result
+            result = obj.sendRequest(methodId,requestArgs{:});
 
-            % Convert response into return value.
-            responseFieldNames = fieldnames(responseStruct);
+            % Convert result into return value.
+            responseFieldNames = fieldnames(result);
             if length(responseFieldNames) == 0
                 rtnVal = NaN;
             elseif length(responseFieldNames) == 1;
-                rtnVal = responseStruct.(responseFieldNames{1});
+                rtnVal = result.(responseFieldNames{1});
             else
                 emptyFlag = true;
                 for i = 1:length(responseFieldNames)
                     name = responseFieldNames{i};
-                    value = responseStruct.(name);
+                    value = result.(name);
                     if ~isempty(value)
                         emptyFlag = false;
                     end
                 end
                 % Return structure or if only fieldnames return cell array of fieldnames
                 if ~emptyFlag
-                    rtnVal = responseStruct;
+                    rtnVal = result;
                 else
                     rtnVal = responseFieldNames;
                     for i = 1:length(rtnVal)
@@ -417,11 +420,6 @@ classdef ModularDevice < handle
         function createMethodIdStruct(obj)
         % createMethodIdStruct - gets structure of method Ids from device.
             obj.methodIdStruct = obj.sendRequest(obj.methodIdGetMethods);
-        end
-
-        function createResponseCodeStruct(obj)
-        % createResponseCodeStruct - gets structure of response codes from the device.
-            obj.responseCodeStruct = obj.sendRequest(obj.methodIdGetResponseCodes);
         end
 
     end
