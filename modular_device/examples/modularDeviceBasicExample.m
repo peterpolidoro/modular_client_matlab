@@ -24,7 +24,7 @@ function modularDeviceBasicExample(port)
     dev = ModularDevice(port);
     dev.open();
     fprintf('Modular Device Info:');
-    dev.getDevInfo()
+    dev.getDeviceInfo()
 
     % Pause for a little bit for added dramma
     pause(1.0)

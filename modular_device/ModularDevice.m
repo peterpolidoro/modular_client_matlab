@@ -71,7 +71,7 @@
 %   device_info = dev.getDeviceInfo()% get device information
 %   dev.getMethods()                 % get device methods
 %   dev.close()                      % close serial connection
-%   delete(dev)                      % deletes the device
+%   clear dev                        % deletes the device
 %
 
 classdef ModularDevice < handle
@@ -267,17 +267,19 @@ classdef ModularDevice < handle
 
 
                 % Check if there is a response error
+                foundResponseError = false;
                 try
                     responseError = responseStruct.error;
+                    responseStruct = rmfield(responseStruct,'error');
                     try
                         message = responseError.message;
                     catch ME
                         message = '';
                     end
                     try
-                         data = responseError.data;
-                     catch ME
-                         data = '';
+                        data = responseError.data;
+                    catch ME
+                        data = '';
                     end
                     try
                         code = responseError.code;
@@ -288,11 +290,15 @@ classdef ModularDevice < handle
                         '(from server) message: %s, data: %s, code: %s', ...
                         message, ...
                         data, ...
-                        code ...
+                        num2str(code) ...
                         );
-                    causeME = MException('ModularDevice:Error', msg);
-                    throw(causeME);
+                    foundResponseError = true;
                 catch ME
+                end
+
+                if foundResponseError
+                    ME = MException('ModularDevice:Error', msg);
+                    throw(ME);
                 end
 
                 % Find result
@@ -328,13 +334,13 @@ classdef ModularDevice < handle
                 arg = requestArgs{i};
                 switch class(arg)
                   case 'double'
-                      if length(arg) == 1
-                          request = sprintf('%s, %f', request, arg);
-                      else
-                          arg = savejson('',arg);
-                          arg(isspace(arg)) = '';
-                          request = sprintf('%s, %s', request, arg);
-                      end
+                    if length(arg) == 1
+                        request = sprintf('%s, %f', request, arg);
+                    else
+                        arg = savejson('',arg);
+                        arg(isspace(arg)) = '';
+                        request = sprintf('%s, %s', request, arg);
+                    end
                   case 'char'
                     request = sprintf('%s, %s', request, arg);
                   otherwise
@@ -362,7 +368,7 @@ classdef ModularDevice < handle
             end
         end
 
-        function rtnVal = dynamicMethodFcn(obj,S)
+        function result = dynamicMethodFcn(obj,S)
         % dynamicMethodFcn - implements the dynamically generated class methods.
 
         % Get method name, method args and method id number
@@ -379,42 +385,8 @@ classdef ModularDevice < handle
             %    requestArgs = obj.convertArgStructToCell(requestArgs{1});
             %end
 
-            % Send method and get result
+            % Send method and get responseStruct
             result = obj.sendRequest(methodId,requestArgs{:});
-
-            % Convert result into return value.
-            responseFieldNames = fieldnames(result);
-            if length(responseFieldNames) == 0
-                rtnVal = NaN;
-            elseif length(responseFieldNames) == 1;
-                rtnVal = result.(responseFieldNames{1});
-            else
-                emptyFlag = true;
-                for i = 1:length(responseFieldNames)
-                    name = responseFieldNames{i};
-                    value = result.(name);
-                    if ~isempty(value)
-                        emptyFlag = false;
-                    end
-                end
-                % Return structure or if only fieldnames return cell array of fieldnames
-                if ~emptyFlag
-                    rtnVal = result;
-                else
-                    rtnVal = responseFieldNames;
-                    for i = 1:length(rtnVal)
-                        name = rtnVal{i};
-                        % Convert '-' character back to human readable
-                        if strcmp(name, 'x0x2D_')
-                            rtnVal{i} = '-';
-                        end
-                        % Convert '+' character back to human readable
-                        if strcmp(name, 'x0x2B_');
-                            rtnVal{i} = '+';
-                        end
-                    end
-                end
-            end
         end
 
         function createMethodIdStruct(obj)
