@@ -71,7 +71,7 @@
 %   device_info = dev.getDeviceInfo()% get device information
 %   dev.getMethods()                 % get device methods
 %   dev.close()                      % close serial connection
-%   clear dev                        % deletes the device
+%   delete(dev)                      % deletes the device
 %
 
 classdef ModularDevice < handle
@@ -177,10 +177,22 @@ classdef ModularDevice < handle
             end
         end
 
+        function result = callServerMethod(obj,methodName,varargin)
+            if ~isempty(obj.methodIdStruct)
+                methodId = obj.methodIdStruct.(methodName)
+                length(varargin)
+                result = sendRequest(obj,methodId,varargin);
+            end
+        end
+
         function methodIds = get.methodIds(obj)
         % get.methodIds - returns the structure of method Ids.
             methodIds = obj.methodIdStruct;
         end
+
+    end
+
+    methods (Access=private)
 
         function varargout = subsref(obj,S)
         % subsref - overloaded subsref function to enable dynamic generation of
