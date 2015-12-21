@@ -177,22 +177,20 @@ classdef ModularDevice < handle
             end
         end
 
-        function result = callServerMethod(obj,methodName,varargin)
-            if ~isempty(obj.methodIdStruct)
-                methodId = obj.methodIdStruct.(methodName)
-                length(varargin)
-                result = sendRequest(obj,methodId,varargin);
-            end
+        function result = callServerMethod(obj,method,varargin)
+            result = obj.sendRequest(method,varargin{:});
+        end
+
+        function result = sendJsonRequest(obj,request)
+            requestCell = loadjson(request);
+            method = requestCell{1};
+            result = obj.sendRequest(method,varargin{:});
         end
 
         function methodIds = get.methodIds(obj)
         % get.methodIds - returns the structure of method Ids.
             methodIds = obj.methodIdStruct;
         end
-
-    end
-
-    methods (Access=private)
 
         function varargout = subsref(obj,S)
         % subsref - overloaded subsref function to enable dynamic generation of
@@ -215,19 +213,18 @@ classdef ModularDevice < handle
             end
         end
 
+    end
 
-        function result = sendRequest(obj,methodId,varargin)
+    methods (Access=private)
+
+        function result = sendRequest(obj,method,varargin)
         % sendRequest - sends a request to the server and reads the server's response.
         % The server responds to all requests with a serialized json string.
         % This string is parsed into a Matlab structure.
-        %
-        % Arguments:
-        %  methodId = the Id number of the method
-        %  varagin  = any additional arguments required by the request
             if obj.isOpen
 
                 % Send request to device
-                request = obj.createRequest(methodId, varargin);
+                request = obj.createRequest(method,varargin{:});
                 if obj.debug
                     fprintf('request: ');
                     fprintf('%c',request);
@@ -267,16 +264,32 @@ classdef ModularDevice < handle
                     rethrow(ME);
                 end
 
-                if responseId ~= methodId
-                    msg = sprintf( ...
-                        'response id: %d does not match request id: %d', ...
-                        responseId, ...
-                        methodId ...
-                        );
-                    ME = MException('ModularDevice:idDoesNotMatch', msg);
+                switch class(method)
+                  case 'double'
+                    if responseId ~= method
+                        msg = sprintf( ...
+                            'response id: %d does not match request id: %d', ...
+                            responseId, ...
+                            method ...
+                            );
+                        ME = MException('ModularDevice:idDoesNotMatch', msg);
+                        throw(ME);
+                    end
+                  case 'char'
+                    if ~strcmp(responseId,method)
+                        msg = sprintf( ...
+                            'response id: %s does not match request id: %s', ...
+                            responseId, ...
+                            method ...
+                            );
+                        ME = MException('ModularDevice:idDoesNotMatch', msg);
+                        throw(ME);
+                    end
+                  otherwise
+                    errMsg = sprintf('unknown method type, %s', class(method));
+                    ME = MException('ModularDevice:UnknownType', errMsg);
                     throw(ME);
                 end
-
 
                 % Check if there is a response error
                 foundResponseError = false;
@@ -338,12 +351,21 @@ classdef ModularDevice < handle
 
     methods (Access=private)
 
-        function request = createRequest(obj, methodId, requestArgs)
+        function request = createRequest(obj,method,varargin)
         % createRequest - create a request for sending to the device given
-        % the methodId and a cell array of the request arguments.
-            request = sprintf('[%d',uint16(methodId));
-            for i=1:length(requestArgs)
-                arg = requestArgs{i};
+        % the method and a cell array of the request arguments.
+            switch class(method)
+              case 'double'
+                request = sprintf('[%d',uint16(method));
+              case 'char'
+                request = sprintf('[%s',method);
+              otherwise
+                errMsg = sprintf('unknown method type, %s', class(method));
+                ME = MException('ModularDevice:UnknownType', errMsg);
+                throw(ME);
+            end
+            for i=1:length(varargin)
+                arg = varargin{i};
                 switch class(arg)
                   case 'double'
                     if length(arg) == 1
@@ -402,7 +424,8 @@ classdef ModularDevice < handle
         end
 
         function createMethodIdStruct(obj)
-        % createMethodIdStruct - gets structure of method Ids from device.
+        % createMethodIdStruct - gets structure of method Ids from
+        % device.
             obj.methodIdStruct = obj.sendRequest(obj.methodIdGetMethods);
         end
 
