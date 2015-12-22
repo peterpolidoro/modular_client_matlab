@@ -181,10 +181,14 @@ classdef ModularDevice < handle
             result = obj.sendRequest(method,varargin{:});
         end
 
+        function json = convertToJson(obj,matlabToConvert)
+            json = savejson('',matlabToConvert,'ArrayIndent',0,'ParseLogical',1,'NoRowBracket',0,'Compact',1);
+        end
+
         function result = sendJsonRequest(obj,request)
-            requestCell = loadjson(request);
+            requestCell = loadjson(request,'SimplifyCell',1);
             method = requestCell{1};
-            result = obj.sendRequest(method,varargin{:});
+            requestJson = obj.convertToJson(requestCell)
         end
 
         function methodIds = get.methodIds(obj)
