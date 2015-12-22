@@ -163,7 +163,7 @@ classdef ModularDevice < handle
 
         function deviceInfoStruct = getDeviceInfo(obj)
         % getDeviceInfo - returns device information
-            deviceInfoStruct = obj.sendRequest(obj.methodIdGetDeviceInfo);
+            deviceInfoStruct = obj.sendRequestGetResult(obj.methodIdGetDeviceInfo);
         end
 
         function getMethods(obj)
@@ -178,17 +178,28 @@ classdef ModularDevice < handle
         end
 
         function result = callServerMethod(obj,method,varargin)
-            result = obj.sendRequest(method,varargin{:});
+            result = obj.sendRequestGetResult(method,varargin{:});
         end
 
         function json = convertToJson(obj,matlabToConvert)
-            json = savejson('',matlabToConvert,'ArrayIndent',0,'ParseLogical',1,'NoRowBracket',0,'Compact',1);
+            json = savejson('',matlabToConvert,'ArrayIndent',0, ...
+                            'ParseLogical',1,'SingletArray',0,'Compact',1);
         end
 
         function result = sendJsonRequest(obj,request)
-            requestCell = loadjson(request,'SimplifyCell',1);
-            method = requestCell{1};
-            requestJson = obj.convertToJson(requestCell)
+            if obj.isOpen
+                requestCell = loadjson(request,'SimplifyCell',0);
+                method = requestCell{1};
+                requestJson = obj.convertToJson(requestCell);
+                fprintf(obj.dev,requestJson);
+                result = obj.handleResponse(method);
+            else
+                ME = MException( ...
+                    'ModularDevice:DeviceNotOpen', ...
+                    'connection must be open to send request to server' ...
+                    );
+                throw(ME);
+            end
         end
 
         function methodIds = get.methodIds(obj)
@@ -221,21 +232,8 @@ classdef ModularDevice < handle
 
     methods (Access=private)
 
-        function result = sendRequest(obj,method,varargin)
-        % sendRequest - sends a request to the server and reads the server's response.
-        % The server responds to all requests with a serialized json string.
-        % This string is parsed into a Matlab structure.
+        function result = handleResponse(obj,requestId)
             if obj.isOpen
-
-                % Send request to device
-                request = obj.createRequest(method,varargin{:});
-                if obj.debug
-                    fprintf('request: ');
-                    fprintf('%c',request);
-                    fprintf('\n');
-                end
-                fprintf(obj.dev,request);
-
                 % Get response as json string and parse
                 response = fscanf(obj.dev,'%c');
                 if obj.debug
@@ -268,29 +266,29 @@ classdef ModularDevice < handle
                     rethrow(ME);
                 end
 
-                switch class(method)
+                switch class(requestId)
                   case 'double'
-                    if responseId ~= method
+                    if responseId ~= requestId
                         msg = sprintf( ...
                             'response id: %d does not match request id: %d', ...
                             responseId, ...
-                            method ...
+                            requestId ...
                             );
                         ME = MException('ModularDevice:idDoesNotMatch', msg);
                         throw(ME);
                     end
                   case 'char'
-                    if ~strcmp(responseId,method)
+                    if ~strcmp(responseId,requestId)
                         msg = sprintf( ...
                             'response id: %s does not match request id: %s', ...
                             responseId, ...
-                            method ...
+                            requestId ...
                             );
                         ME = MException('ModularDevice:idDoesNotMatch', msg);
                         throw(ME);
                     end
                   otherwise
-                    errMsg = sprintf('unknown method type, %s', class(method));
+                    errMsg = sprintf('unknown requestId type, %s', class(requestId));
                     ME = MException('ModularDevice:UnknownType', errMsg);
                     throw(ME);
                 end
@@ -345,7 +343,31 @@ classdef ModularDevice < handle
             else
                 ME = MException( ...
                     'ModularDevice:DeviceNotOpen', ...
-                    'connection must be open to send method to device' ...
+                    'connection must be open to send request to server' ...
+                    );
+                throw(ME);
+            end
+        end
+
+        function result = sendRequestGetResult(obj,method,varargin)
+        % sendRequestGetResult - sends a request to the server and reads the server's response.
+        % The server responds to all requests with a serialized json string.
+        % This string is parsed into a Matlab structure.
+            if obj.isOpen
+
+                % Send request to device
+                request = obj.createRequest(method,varargin{:});
+                if obj.debug
+                    fprintf('request: ');
+                    fprintf('%c',request);
+                    fprintf('\n');
+                end
+                fprintf(obj.dev,request);
+                result = obj.handleResponse(method);
+            else
+                ME = MException( ...
+                    'ModularDevice:DeviceNotOpen', ...
+                    'connection must be open to send request to server' ...
                     );
                 throw(ME);
             end
@@ -424,13 +446,13 @@ classdef ModularDevice < handle
             %end
 
             % Send method and get responseStruct
-            result = obj.sendRequest(methodId,requestArgs{:});
+            result = obj.sendRequestGetResult(methodId,requestArgs{:});
         end
 
         function createMethodIdStruct(obj)
         % createMethodIdStruct - gets structure of method Ids from
         % device.
-            obj.methodIdStruct = obj.sendRequest(obj.methodIdGetMethods);
+            obj.methodIdStruct = obj.sendRequestGetResult(obj.methodIdGetMethods);
         end
 
     end
