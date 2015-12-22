@@ -9,7 +9,7 @@ function data = loadubjson(fname,varargin)
 % authors:Qianqian Fang (fangq<at> nmr.mgh.harvard.edu)
 % created on 2013/08/01
 %
-% $Id: loadubjson.m 492 2015-06-05 20:52:02Z fangq $
+% $Id$
 %
 % input:
 %      fname: input file name, if fname contains "{}" or "[]", fname
@@ -44,7 +44,7 @@ function data = loadubjson(fname,varargin)
 %      dat=loadubjson(['examples' filesep 'example1.ubj'],'SimplifyCell',1)
 %
 % license:
-%     BSD License, see LICENSE_BSD.txt files for details 
+%     BSD or GPL version 3, see LICENSE_{BSD,GPLv3}.txt files for details 
 %
 % -- this function is part of JSONLab toolbox (http://iso2mesh.sf.net/cgi-bin/index.cgi?jsonlab)
 %

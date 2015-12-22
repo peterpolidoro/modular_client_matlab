@@ -17,7 +17,7 @@ function data = loadjson(fname,varargin)
 %         http://www.mathworks.com/matlabcentral/fileexchange/20565
 %            created on 2008/07/03
 %
-% $Id: loadjson.m 492 2015-06-05 20:52:02Z fangq $
+% $Id$
 %
 % input:
 %      fname: input file name, if fname contains "{}" or "[]", fname
@@ -56,14 +56,14 @@ function data = loadjson(fname,varargin)
 %      dat=loadjson(['examples' filesep 'example1.json'],'SimplifyCell',1)
 %
 % license:
-%     BSD License, see LICENSE_BSD.txt files for details 
+%     BSD or GPL version 3, see LICENSE_{BSD,GPLv3}.txt files for details 
 %
 % -- this function is part of JSONLab toolbox (http://iso2mesh.sf.net/cgi-bin/index.cgi?jsonlab)
 %
 
 global pos inStr len  esc index_esc len_esc isoct arraytoken
 
-if(regexp(fname,'[\{\}\]\[]','once'))
+if(regexp(fname,'^\s*(?:\[.+\])|(?:\{.+\})\s*$','once'))
    string=fname;
 elseif(exist(fname,'file'))
    try

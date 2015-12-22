@@ -4,7 +4,7 @@
 ===============================================================================
 
 *Copyright (C) 2011-2015  Qianqian Fang <fangq at nmr.mgh.harvard.edu>
-*License: BSD License, see License_BSD.txt
+*License: BSD or GNU General Public License version 3 (GPL v3), see License*.txt
 *Version: 1.1 (Optimus - Update 1)
 
 -------------------------------------------------------------------------------
