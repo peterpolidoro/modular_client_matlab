@@ -11,13 +11,14 @@ function json=savejson(rootname,obj,varargin)
 % author: Qianqian Fang (fangq<at> nmr.mgh.harvard.edu)
 % created on 2011/09/09
 %
-% $Id: savejson.m 492 2015-06-05 20:52:02Z fangq $
+% $Id$
 %
 % input:
 %      rootname: the name of the root-object, when set to '', the root name
 %        is ignored, however, when opt.ForceRootName is set to 1 (see below),
 %        the MATLAB variable name will be used as the root name.
-%      obj: a MATLAB object (array, cell, cell array, struct, struct array).
+%      obj: a MATLAB object (array, cell, cell array, struct, struct array,
+%      class instance).
 %      filename: a string for the file name to save the output JSON data.
 %      opt: a struct for additional options, ignore to use default values.
 %        opt can have the following fields (first in [.|.] is the default)
@@ -40,10 +41,13 @@ function json=savejson(rootname,obj,varargin)
 %                         parts, and also "_ArrayIsComplex_":1 is added. 
 %        opt.ParseLogical [0|1]: if this is set to 1, logical array elem
 %                         will use true/false rather than 1/0.
-%        opt.NoRowBracket [1|0]: if this is set to 1, arrays with a single
+%        opt.SingletArray [0|1]: if this is set to 1, arrays with a single
 %                         numerical element will be shown without a square
 %                         bracket, unless it is the root object; if 0, square
 %                         brackets are forced for any numerical arrays.
+%        opt.SingletCell  [1|0]: if 1, always enclose a cell with "[]" 
+%                         even it has only one element; if 0, brackets
+%                         are ignored when a cell has only 1 element.
 %        opt.ForceRootName [0|1]: when set to 1 and rootname is empty, savejson
 %                         will use the name of the passed obj variable as the 
 %                         root object name; if obj is an expression and 
@@ -80,7 +84,7 @@ function json=savejson(rootname,obj,varargin)
 %      savejson('',jsonmesh,'ArrayIndent',0,'FloatFormat','\t%.5g')
 %
 % license:
-%     BSD License, see LICENSE_BSD.txt files for details
+%     BSD or GPL version 3, see LICENSE_{BSD,GPLv3}.txt files for details
 %
 % -- this function is part of JSONLab toolbox (http://iso2mesh.sf.net/cgi-bin/index.cgi?jsonlab)
 %
@@ -96,15 +100,22 @@ else
    varname=inputname(2);
 end
 if(length(varargin)==1 && ischar(varargin{1}))
-   opt=struct('FileName',varargin{1});
+   opt=struct('filename',varargin{1});
 else
    opt=varargin2struct(varargin{:});
 end
 opt.IsOctave=exist('OCTAVE_VERSION','builtin');
+if(isfield(opt,'norowbracket'))
+    warning('Option ''NoRowBracket'' is depreciated, please use ''SingletArray'' and set its value to not(NoRowBracket)');
+    if(~isfield(opt,'singletarray'))
+        opt.singletarray=not(opt.norowbracket);
+    end
+end
 rootisarray=0;
 rootlevel=1;
 forceroot=jsonopt('ForceRootName',0,opt);
-if((isnumeric(obj) || islogical(obj) || ischar(obj) || isstruct(obj) || iscell(obj)) && isempty(rootname) && forceroot==0)
+if((isnumeric(obj) || islogical(obj) || ischar(obj) || isstruct(obj) || ...
+        iscell(obj) || isobject(obj)) && isempty(rootname) && forceroot==0)
     rootisarray=1;
     rootlevel=0;
 else
@@ -139,12 +150,13 @@ if(~isempty(jsonp))
 end
 
 % save to a file if FileName is set, suggested by Patrick Rapin
-if(~isempty(jsonopt('FileName','',opt)))
+filename=jsonopt('FileName','',opt);
+if(~isempty(filename))
     if(jsonopt('SaveBinary',0,opt)==1)
-	    fid = fopen(opt.FileName, 'wb');
+	    fid = fopen(filename, 'wb');
 	    fwrite(fid,json);
     else
-	    fid = fopen(opt.FileName, 'wt');
+	    fid = fopen(filename, 'wt');
 	    fwrite(fid,json,'char');
     end
     fclose(fid);
@@ -159,13 +171,15 @@ elseif(isstruct(item))
     txt=struct2json(name,item,level,varargin{:});
 elseif(ischar(item))
     txt=str2json(name,item,level,varargin{:});
+elseif(isobject(item)) 
+    txt=matlabobject2json(name,item,level,varargin{:});
 else
     txt=mat2json(name,item,level,varargin{:});
 end
 
 %%-------------------------------------------------------------------------
 function txt=cell2json(name,item,level,varargin)
-txt='';
+txt={};
 if(~iscell(item))
         error('input is not a cell');
 end
@@ -180,44 +194,46 @@ ws=jsonopt('whitespaces_',struct('tab',sprintf('\t'),'newline',sprintf('\n'),'se
 padding0=repmat(ws.tab,1,level);
 padding2=repmat(ws.tab,1,level+1);
 nl=ws.newline;
-if(len>1)
+bracketlevel=~jsonopt('singletcell',1,varargin{:});
+if(len>bracketlevel)
     if(~isempty(name))
-        txt=sprintf('%s"%s": [%s',padding0, checkname(name,varargin{:}),nl); name=''; 
+        txt={padding0, '"', checkname(name,varargin{:}),'": [', nl}; name=''; 
     else
-        txt=sprintf('%s[%s',padding0,nl); 
+        txt={padding0, '[', nl};
     end
 elseif(len==0)
     if(~isempty(name))
-        txt=sprintf('%s"%s": []',padding0, checkname(name,varargin{:})); name=''; 
+        txt={padding0, '"' checkname(name,varargin{:}) '": []'}; name=''; 
     else
-        txt=sprintf('%s[]',padding0); 
+        txt={padding0, '[]'};
     end
 end
-for j=1:dim(2)
+for i=1:dim(1)
     if(dim(1)>1)
-        txt=sprintf('%s%s[%s',txt,padding2,nl);
+        txt(end+1:end+3)={padding2,'[',nl};
     end
-    for i=1:dim(1)
-       txt=sprintf('%s%s',txt,obj2json(name,item{i,j},level+(dim(1)>1)+(len>1),varargin{:}));
-       if(i<dim(1))
-           txt=sprintf('%s%s',txt,sprintf(',%s',nl));
+    for j=1:dim(2)
+       txt{end+1}=obj2json(name,item{i,j},level+(dim(1)>1)+(len>bracketlevel),varargin{:});
+       if(j<dim(2))
+           txt(end+1:end+2)={',' nl};
        end
     end
     if(dim(1)>1)
-        txt=sprintf('%s%s%s]',txt,nl,padding2);
+        txt(end+1:end+3)={nl,padding2,']'};
     end
-    if(j<dim(2))
-        txt=sprintf('%s%s',txt,sprintf(',%s',nl));
+    if(i<dim(1))
+        txt(end+1:end+2)={',' nl};
     end
     %if(j==dim(2)) txt=sprintf('%s%s',txt,sprintf(',%s',nl)); end
 end
-if(len>1)
-    txt=sprintf('%s%s%s]',txt,nl,padding0);
+if(len>bracketlevel)
+    txt(end+1:end+3)={nl,padding0,']'};
 end
+txt = sprintf('%s',txt{:});
 
 %%-------------------------------------------------------------------------
 function txt=struct2json(name,item,level,varargin)
-txt='';
+txt={};
 if(~isstruct(item))
 	error('input is not a struct');
 end
@@ -227,7 +243,7 @@ if(ndims(squeeze(item))>2) % for 3D or higher dimensions, flatten to 2D for now
     dim=size(item);
 end
 len=numel(item);
-forcearray= (len>1 || (jsonopt('NoRowBracket',1,varargin{:})==0 && level>0));
+forcearray= (len>1 || (jsonopt('SingletArray',0,varargin{:})==1 && level>0));
 ws=struct('tab',sprintf('\t'),'newline',sprintf('\n'));
 ws=jsonopt('whitespaces_',ws,varargin{:});
 padding0=repmat(ws.tab,1,level);
@@ -237,61 +253,62 @@ nl=ws.newline;
 
 if(isempty(item)) 
     if(~isempty(name)) 
-        txt=sprintf('%s"%s": []',padding0,checkname(name,varargin{:}));
+        txt={padding0, '"', checkname(name,varargin{:}),'": []'};
     else
-        txt=sprintf('%s[]',padding0);
+        txt={padding0, '[]'};
     end
     return;
 end
 if(~isempty(name)) 
     if(forcearray)
-        txt=sprintf('%s"%s": [%s',padding0,checkname(name,varargin{:}),nl);
+        txt={padding0, '"', checkname(name,varargin{:}),'": [', nl};
     end
 else
     if(forcearray)
-        txt=sprintf('%s[%s',padding0,nl);
+        txt={padding0, '[', nl};
     end
 end
 for j=1:dim(2)
   if(dim(1)>1)
-      txt=sprintf('%s%s[%s',txt,padding2,nl);
+      txt(end+1:end+3)={padding2,'[',nl};
   end
   for i=1:dim(1)
     names = fieldnames(item(i,j));
     if(~isempty(name) && len==1 && ~forcearray)
-        txt=sprintf('%s%s"%s": {%s',txt,padding1, checkname(name,varargin{:}),nl); 
+        txt(end+1:end+5)={padding1, '"', checkname(name,varargin{:}),'": {', nl};
     else
-        txt=sprintf('%s%s{%s',txt,padding1,nl); 
+        txt(end+1:end+3)={padding1, '{', nl};
     end
     if(~isempty(names))
       for e=1:length(names)
-	    txt=sprintf('%s%s',txt,obj2json(names{e},item(i,j).(names{e}),...
-             level+(dim(1)>1)+1+forcearray,varargin{:}));
+	    txt{end+1}=obj2json(names{e},item(i,j).(names{e}),...
+             level+(dim(1)>1)+1+forcearray,varargin{:});
         if(e<length(names))
-            txt=sprintf('%s%s',txt,',');
+            txt{end+1}=',';
         end
-        txt=sprintf('%s%s',txt,nl);
+        txt{end+1}=nl;
       end
     end
-    txt=sprintf('%s%s}',txt,padding1);
+    txt(end+1:end+2)={padding1,'}'};
     if(i<dim(1))
-        txt=sprintf('%s%s',txt,sprintf(',%s',nl));
+        txt(end+1:end+2)={',' nl};
     end
   end
   if(dim(1)>1)
-      txt=sprintf('%s%s%s]',txt,nl,padding2);
+      txt(end+1:end+3)={nl,padding2,']'};
   end
   if(j<dim(2))
-      txt=sprintf('%s%s',txt,sprintf(',%s',nl));
+      txt(end+1:end+2)={',' nl};
   end
 end
 if(forcearray)
-    txt=sprintf('%s%s%s]',txt,nl,padding0);
+    txt(end+1:end+3)={nl,padding0,']'};
 end
+txt = sprintf('%s',txt{:});
 
 %%-------------------------------------------------------------------------
 function txt=str2json(name,item,level,varargin)
-txt='';
+txt={};
 if(~ischar(item))
         error('input is not a string');
 end
@@ -306,11 +323,11 @@ sep=ws.sep;
 
 if(~isempty(name)) 
     if(len>1)
-        txt=sprintf('%s"%s": [%s',padding1,checkname(name,varargin{:}),nl);
+        txt={padding1, '"', checkname(name,varargin{:}),'": [', nl};
     end
 else
     if(len>1)
-        txt=sprintf('%s[%s',padding1,nl);
+        txt={padding1, '[', nl};
     end
 end
 for e=1:len
@@ -320,18 +337,19 @@ for e=1:len
         if(isempty(name))
             obj=['"',val,'"'];
         end
-        txt=sprintf('%s%s%s%s',txt,padding1,obj);
+        txt(end+1:end+2)={padding1, obj};
     else
-        txt=sprintf('%s%s%s%s',txt,padding0,['"',val,'"']);
+        txt(end+1:end+4)={padding0,'"',val,'"'};
     end
     if(e==len)
         sep='';
     end
-    txt=sprintf('%s%s',txt,sep);
+    txt{end+1}=sep;
 end
 if(len>1)
-    txt=sprintf('%s%s%s%s',txt,nl,padding1,']');
+    txt(end+1:end+3)={nl,padding1,']'};
 end
+txt = sprintf('%s',txt{:});
 
 %%-------------------------------------------------------------------------
 function txt=mat2json(name,item,level,varargin)
@@ -355,7 +373,7 @@ if(length(size(item))>2 || issparse(item) || ~isreal(item) || ...
               padding1,checkname(name,varargin{:}),nl,padding0,class(item),nl,padding0,regexprep(mat2str(size(item)),'\s+',','),nl);
     end
 else
-    if(numel(item)==1 && jsonopt('NoRowBracket',1,varargin{:})==1 && level>0)
+    if(numel(item)==1 && jsonopt('SingletArray',0,varargin{:})==0 && level>0)
         numtxt=regexprep(regexprep(matdata2json(item,level+1,varargin{:}),'^\[',''),']','');
     else
         numtxt=matdata2json(item,level+1,varargin{:});
@@ -363,7 +381,7 @@ else
     if(isempty(name))
     	txt=sprintf('%s%s',padding1,numtxt);
     else
-        if(numel(item)==1 && jsonopt('NoRowBracket',1,varargin{:})==1)
+        if(numel(item)==1 && jsonopt('SingletArray',0,varargin{:})==0)
            	txt=sprintf('%s"%s": %s',padding1,checkname(name,varargin{:}),numtxt);
         else
     	    txt=sprintf('%s"%s": %s',padding1,checkname(name,varargin{:}),numtxt);
@@ -410,6 +428,23 @@ else
     end
 end
 txt=sprintf('%s%s%s',txt,padding1,'}');
+
+%%-------------------------------------------------------------------------
+function txt=matlabobject2json(name,item,level,varargin)
+if numel(item) == 0 %empty object
+    st = struct();
+else
+    % "st = struct(item);" would produce an inmutable warning, because it
+    % make the protected and private properties visible. Instead we get the
+    % visible properties
+    propertynames = properties(item);
+    for p = 1:numel(propertynames)
+        for o = numel(item):-1:1 % aray of objects
+            st(o).(propertynames{p}) = item(o).(propertynames{p});
+        end
+    end
+end
+txt=struct2json(name,st,level,varargin{:});
 
 %%-------------------------------------------------------------------------
 function txt=matdata2json(mat,level,varargin)
