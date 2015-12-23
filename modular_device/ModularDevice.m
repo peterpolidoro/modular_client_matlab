@@ -36,6 +36,12 @@
 %     methods. Note, the device must be opened for this method to work.
 %     Usage: dev.getMethods()
 %
+%   * callServerMethod
+%
+%   * convertToJson
+%
+%   * sendJsonRequest
+%
 % Notes:
 %
 %  * Find serial port of modular device connected with a USB cable.
@@ -397,16 +403,12 @@ classdef ModularDevice < handle
                     if length(arg) == 1
                         request = sprintf('%s, %f', request, arg);
                     else
-                        arg = savejson('',arg);
-                        arg(isspace(arg)) = '';
-                        request = sprintf('%s, %s', request, arg);
+                        json = obj.convertToJson(arg);
+                        request = sprintf('%s, %s', request, json);
                     end
-                  case 'char'
-                    request = sprintf('%s, %s', request, arg);
                   otherwise
-                    errMsg = sprintf('unknown type, %s, in method', class(arg));
-                    ME = MException('ModularDevice:UnknownType', errMsg);
-                    throw(ME);
+                    json = obj.convertToJson(arg);
+                    request = sprintf('%s, %s', request, json);
                 end
             end
             request = sprintf('%s]',request);
