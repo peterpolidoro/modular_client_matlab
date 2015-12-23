@@ -82,6 +82,8 @@ Clone this repository:
 
 ```shell
 git clone https://github.com/janelia-modular-devices/modular_device_matlab.git
+git submodule init
+git submodule update
 ```
 
 ####Using zip file
