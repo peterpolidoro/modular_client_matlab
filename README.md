@@ -88,21 +88,33 @@ git submodule update
 
 ####Using zip file
 
-Download this repository as a zip file:
+Click on this zip file link and open with Windows Explorer:
 
 <https://github.com/janelia-matlab/modular_device_matlab/archive/master.zip>
 
-Extract into directory of choice and take note of the path.
+Extract all files into directory of choice and take note of the path.
 
 (e.g. PATH = c:\Users\User\My Documents\Matlab).
 
-Download the jsonlab repository as a zip file:
+Click on this zip file link and open with Windows Explorer:
 
 <https://github.com/janelia-matlab/jsonlab/archive/master.zip>
 
-Extract files into directory:
+Extract all files into directory:
 
-    PATH\modular_device_matlab\modular_device\jsonlab
+    PATH\modular_device_matlab-master\modular_device\
+
+Delete this directory in Windows Explorer:
+
+    PATH\modular_device_matlab-master\modular_device\jsonlab
+
+Rename this directory:
+
+    PATH\modular_device_matlab-master\modular_device\jsonlab-master
+
+To:
+
+    PATH\modular_device_matlab-master\modular_device\jsonlab
 
 ###Setup Matlab
 
