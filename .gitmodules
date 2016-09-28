@@ -1,3 +1,0 @@
-[submodule "modular_device/jsonlab"]
-	path = modular_device/jsonlab
-	url = https://github.com/janelia-matlab/jsonlab.git
