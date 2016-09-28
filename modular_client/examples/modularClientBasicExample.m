@@ -1,6 +1,6 @@
-function modularDeviceBasicExample(port)
-% modularDeviceBasicExample: demonstrates basic use of the
-% ModularDevice class.
+function modularClientBasicExample(port)
+% modularClientBasicExample: demonstrates basic use of the
+% ModularClient class.
 %
 %  * Find serial port of modular device connected with a USB cable.
 %    Windows:
@@ -15,13 +15,13 @@ function modularDeviceBasicExample(port)
 % Usage: (replace 'COM5' with the serial port of your device)
 %
 % getAvailableComPorts()
-% modularDeviceBasicExample('COM5')
+% modularClientBasicExample('COM5')
 %
 
-    % Create the Modular device object, open serial
+    % Create the Modular client object, open serial
     % connection and display device info.
-    fprintf('Opening Modular device...\n');
-    dev = ModularDevice(port);
+    fprintf('Opening Modular client...\n');
+    dev = ModularClient(port);
     dev.open();
     fprintf('Modular Device Info:');
     dev.getDeviceInfo()
@@ -36,5 +36,5 @@ function modularDeviceBasicExample(port)
     % Clean up -
     dev.close();
     delete(dev);
-    fprintf('Closed device. Goodbye!\n');
+    fprintf('Closed client. Goodbye!\n');
 end

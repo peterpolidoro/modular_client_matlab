@@ -1,6 +1,6 @@
-#modular_device_matlab
+#modular_client_matlab
 
-ModularDevice.m - This is the Matlab modular device client library for
+ModularClient.m - This is the Matlab modular device client library for
     communicating with and calling remote methods on modular device
     servers.
 
@@ -15,11 +15,11 @@ License:
 
 ##Example Usage
 
-For help type "help ModularDevice" from the Matlab command line.
+For help type "help ModularClient" from the Matlab command line.
 
 See example m files in:
 
-[./modular_device/examples/](./modular_device/examples/)
+[./modular_client/examples/](./modular_client/examples/)
 
 ```matlab
 % Linux and Mac OS X
@@ -33,12 +33,12 @@ ans =
 'COM4'
 serial_port = 'COM4'             % example Windows serial port
 %
-dev = ModularDevice(serial_port) % creates a device object
+dev = ModularClient(serial_port) % creates a client object
 dev.open()                       % opens a serial connection to the device
 device_info = dev.getDeviceInfo()% get device info
 dev.getMethods()                 % get device methods
 dev.close()                      % close serial connection
-delete(dev)                      % deletes the device
+delete(dev)                      % deletes the client
 ```
 
 More Detailed Modular Device Information:
@@ -70,57 +70,28 @@ sudo usermod -aG dialout $USER
 
 ###Download this repository from github
 
-Either use git or download and uncompress zip file.
-
 ####Using git
 
 Install git if necessary:
 
-<http://git-scm.com/book/en/Getting-Started-Installing-Git>
+<https://github.com/janelia-idf/git_setup>
 
 Clone this repository:
 
+(e.g. PATH = c:\Users\User\My Documents\Matlab).
+
 ```shell
-git clone https://github.com/janelia-modular-devices/modular_device_matlab.git
+cd PATH
+git clone https://github.com/janelia-matlab/modular_client_matlab.git
 git submodule init
 git submodule update
 ```
-
-####Using zip file
-
-Click on this zip file link and open with Windows Explorer:
-
-<https://github.com/janelia-matlab/modular_device_matlab/archive/master.zip>
-
-Extract all files into directory of choice and take note of the path.
-
-(e.g. PATH = c:\Users\User\My Documents\Matlab).
-
-Click on this zip file link and open with Windows Explorer:
-
-<https://github.com/janelia-matlab/jsonlab/archive/master.zip>
-
-Extract all files into directory:
-
-    PATH\modular_device_matlab-master\modular_device\
-
-Delete this directory in Windows Explorer:
-
-    PATH\modular_device_matlab-master\modular_device\jsonlab
-
-Rename this directory:
-
-    PATH\modular_device_matlab-master\modular_device\jsonlab-master
-
-To:
-
-    PATH\modular_device_matlab-master\modular_device\jsonlab
 
 ###Setup Matlab
 
 Add this path and all its subdirectories to the Matlab path:
 
-    PATH\modular_device_matlab\modular_device\
+    PATH\modular_client_matlab\modular_client\
 
 ###Setup Hardware
 

@@ -1,4 +1,4 @@
-% ModularDevice - This is the Matlab modular device client library for
+% ModularClient - This is the Matlab modular device client library for
 %    communicating with and calling remote methods on modular device
 %    servers.matlab serial interface for controlling and
 %
@@ -12,8 +12,8 @@
 %   * methodIds = structure of method identification numbers retrieved from device.
 %
 %
-% Note, in what follows 'dev' is assumed to be an instance of the ModularDevice class.
-% dev = ModularDevice(portName)
+% Note, in what follows 'dev' is assumed to be an instance of the ModularClient class.
+% dev = ModularClient(portName)
 %
 % Regular (public) class methods
 % -----------------------------
@@ -24,16 +24,16 @@
 %   * close - closes serial connection to device
 %     Usage: dev.close()
 %
-%   * delete - deletes instance of device object.
+%   * delete - deletes instance of client object.
 %     Usage: dev.delete() or delete(dev)
 %
 %   * getDeviceInfo - returns the device information.
 %     e.g. name, model number, serial number, firmware version
-%     Note, the device must be opened for this method to work.
+%     Note, the client must be opened for this method to work.
 %     Usage: device_info = dev.getDeviceInfo()
 %
 %   * getMethods - prints the names of all dynamically generated class
-%     methods. Note, the device must be opened for this method to work.
+%     methods. Note, the client must be opened for this method to work.
 %     Usage: dev.getMethods()
 %
 %   * callServerMethod
@@ -72,15 +72,15 @@
 %   'COM4'
 %   serial_port = 'COM4'             % example Windows serial port
 %
-%   dev = ModularDevice(serial_port) % creates a device object
+%   dev = ModularClient(serial_port) % creates a client object
 %   dev.open()                       % opens a serial connection to the device
 %   device_info = dev.getDeviceInfo()% get device information
 %   dev.getMethods()                 % get device methods
 %   dev.close()                      % close serial connection
-%   delete(dev)                      % deletes the device
+%   delete(dev)                      % deletes the client
 %
 
-classdef ModularDevice < handle
+classdef ModularClient < handle
 
     properties
         dev = [];
@@ -118,8 +118,8 @@ classdef ModularDevice < handle
 
     methods
 
-        function obj = ModularDevice(port)
-        % ModularDevice - class constructor.
+        function obj = ModularClient(port)
+        % ModularClient - class constructor.
             obj.dev = serial( ...
                 port, ...
                 'baudrate', obj.baudrate, ...
@@ -201,7 +201,7 @@ classdef ModularDevice < handle
                 result = obj.handleResponse(method);
             else
                 ME = MException( ...
-                    'ModularDevice:DeviceNotOpen', ...
+                    'ModularClient:ClientNotOpen', ...
                     'connection must be open to send request to server' ...
                     );
                 throw(ME);
@@ -252,7 +252,7 @@ classdef ModularDevice < handle
                     responseStruct = loadjson(response);
                 catch ME
                     causeME = MException( ...
-                        'ModularDevice:unableToParseJSON', ...
+                        'ModularClient:unableToParseJSON', ...
                         'Unable to parse server response' ...
                         );
                     ME = addCause(ME, causeME);
@@ -265,7 +265,7 @@ classdef ModularDevice < handle
                     responseStruct = rmfield(responseStruct,'id');
                 catch ME
                     causeME = MException( ...
-                        'ModularDevice:MissingId', ...
+                        'ModularClient:MissingId', ...
                         'server response does not contain id member' ...
                         );
                     ME = addCause(ME, causeME);
@@ -280,7 +280,7 @@ classdef ModularDevice < handle
                             responseId, ...
                             requestId ...
                             );
-                        ME = MException('ModularDevice:idDoesNotMatch', msg);
+                        ME = MException('ModularClient:idDoesNotMatch', msg);
                         throw(ME);
                     end
                   case 'char'
@@ -290,12 +290,12 @@ classdef ModularDevice < handle
                             responseId, ...
                             requestId ...
                             );
-                        ME = MException('ModularDevice:idDoesNotMatch', msg);
+                        ME = MException('ModularClient:idDoesNotMatch', msg);
                         throw(ME);
                     end
                   otherwise
                     errMsg = sprintf('unknown requestId type, %s', class(requestId));
-                    ME = MException('ModularDevice:UnknownType', errMsg);
+                    ME = MException('ModularClient:UnknownType', errMsg);
                     throw(ME);
                 end
 
@@ -330,7 +330,7 @@ classdef ModularDevice < handle
                 end
 
                 if foundResponseError
-                    ME = MException('ModularDevice:Error', msg);
+                    ME = MException('ModularClient:Error', msg);
                     throw(ME);
                 end
 
@@ -339,7 +339,7 @@ classdef ModularDevice < handle
                     result = responseStruct.result;
                 catch ME
                     causeME = MException( ...
-                        'ModularDevice:MissingResult', ...
+                        'ModularClient:MissingResult', ...
                         'server response does not contain result member' ...
                         );
                     ME = addCause(ME, causeME);
@@ -348,7 +348,7 @@ classdef ModularDevice < handle
 
             else
                 ME = MException( ...
-                    'ModularDevice:DeviceNotOpen', ...
+                    'ModularClient:ClientNotOpen', ...
                     'connection must be open to send request to server' ...
                     );
                 throw(ME);
@@ -372,7 +372,7 @@ classdef ModularDevice < handle
                 result = obj.handleResponse(method);
             else
                 ME = MException( ...
-                    'ModularDevice:DeviceNotOpen', ...
+                    'ModularClient:ClientNotOpen', ...
                     'connection must be open to send request to server' ...
                     );
                 throw(ME);
@@ -393,7 +393,7 @@ classdef ModularDevice < handle
                 request = sprintf('[%s',method);
               otherwise
                 errMsg = sprintf('unknown method type, %s', class(method));
-                ME = MException('ModularDevice:UnknownType', errMsg);
+                ME = MException('ModularClient:UnknownType', errMsg);
                 throw(ME);
             end
             for i=1:length(varargin)
