@@ -27,11 +27,6 @@
 %   * delete - deletes instance of client object.
 %     Usage: dev.delete() or delete(dev)
 %
-%   * getDeviceInfo - returns the device information.
-%     e.g. name, model number, serial number, firmware version
-%     Note, the client must be opened for this method to work.
-%     Usage: device_info = dev.getDeviceInfo()
-%
 %   * getMethods - prints the names of all dynamically generated class
 %     methods. Note, the client must be opened for this method to work.
 %     Usage: dev.getMethods()
@@ -74,7 +69,7 @@
 %
 %   dev = ModularClient(serial_port) % creates a client object
 %   dev.open()                       % opens a serial connection to the device
-%   device_info = dev.getDeviceInfo()% get device information
+%   device_id = dev.getDeviceId()    % get device ID
 %   dev.getMethods()                 % get device methods
 %   dev.close()                      % close serial connection
 %   delete(dev)                      % deletes the client
@@ -105,8 +100,7 @@ classdef ModularClient < handle
         powerOnDelay = 1.5;
 
         % Method ids for basic methods.
-        methodIdGetDeviceInfo = 0;
-        methodIdGetMethods = 1;
+        methodIdGetMethods = 0;
 
     end
 
@@ -165,11 +159,6 @@ classdef ModularClient < handle
             else
                 isOpen = false;
             end
-        end
-
-        function deviceInfoStruct = getDeviceInfo(obj)
-        % getDeviceInfo - returns device information
-            deviceInfoStruct = obj.sendRequestGetResult(obj.methodIdGetDeviceInfo);
         end
 
         function getMethods(obj)

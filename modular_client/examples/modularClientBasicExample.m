@@ -19,12 +19,12 @@ function modularClientBasicExample(port)
 %
 
     % Create the Modular client object, open serial
-    % connection and display device info.
+    % connection and display device id.
     fprintf('Opening Modular client...\n');
     dev = ModularClient(port);
     dev.open();
-    fprintf('Modular Device Info:');
-    dev.getDeviceInfo()
+    fprintf('Modular Device ID:');
+    dev.getDeviceId()
 
     % Pause for a little bit for added dramma
     pause(1.0)

@@ -35,7 +35,7 @@ serial_port = 'COM4'             % example Windows serial port
 %
 dev = ModularClient(serial_port) % creates a client object
 dev.open()                       % opens a serial connection to the device
-device_info = dev.getDeviceInfo()% get device info
+device_id = dev.getDeviceId()    % get device id
 dev.getMethods()                 % get device methods
 dev.close()                      % close serial connection
 delete(dev)                      % deletes the client
