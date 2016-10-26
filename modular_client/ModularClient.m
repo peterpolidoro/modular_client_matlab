@@ -89,7 +89,7 @@ classdef ModularClient < handle
     properties (Constant, Access=private)
 
         % Serial communication parameters.
-        baudrate = 9600;
+        baudrate = 115200;
         databits = 8;
         stopbits = 1;
         timeout = 1.0;
