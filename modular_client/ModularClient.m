@@ -179,6 +179,7 @@ classdef ModularClient < handle
         function json = convertToJson(obj,matlabToConvert)
             json = savejson('',matlabToConvert,'ArrayIndent',0, ...
                             'ParseLogical',1,'SingletArray',0,'Compact',1);
+            json = strtrim(json);
         end
 
         function result = sendJsonRequest(obj,request)
