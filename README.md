@@ -7,7 +7,6 @@ communicating with Arduino devices running the appropriate firmware.
 Authors:
 
     Peter Polidoro <polidorop@janelia.hhmi.org>
-    Will Dickson <will@iorodeo.com>
 
 License:
 
@@ -64,12 +63,13 @@ Install git if necessary:
 Clone this repository:
 
 ```shell
-git clone https://github.com/JaneliaSciComp/matlab_arduino_device.git
+git clone https://github.com/janelia-matlab/modular_client_matlab.git
+git checkout -b arduino_device origin/arduino_device
 ```
 
 ####Using zip file
 
-<https://github.com/JaneliaSciComp/matlab_arduino_device/archive/master.zip>
+<https://github.com/janelia-matlab/modular_client_matlab/archive/arduino_device.zip>
 
 ###Setup Matlab
 
