@@ -209,9 +209,7 @@ classdef ModularClient < handle
             val = [];
             if obj.isDynamicMethod(S)
                 val = obj.dynamicMethodFcn(S);
-                if ~(length(val) == 1) | isstruct(val) | ~isnan(val)
-                    varargout = {val};
-                end
+                varargout = {val};
             else
                 if nargout == 0
                     builtin('subsref',obj,S);
