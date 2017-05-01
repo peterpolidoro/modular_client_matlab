@@ -95,7 +95,7 @@ classdef ModularClient < handle
         timeout = 1.0;
         terminator = 'LF';
         resetDelay = 2.0;
-        inputBufferSize = 2048;
+        inputBufferSize = 8192;
         waitPauseDt = 0.25;
         powerOnDelay = 1.5;
 
