@@ -31,7 +31,7 @@
 %     methods. Note, the client must be opened for this method to work.
 %     Usage: dev.getMethods()
 %
-%   * callServerMethod
+%   * callGetResult
 %
 %   * convertToJson
 %
@@ -172,8 +172,12 @@ classdef ModularClient < handle
             end
         end
 
-        function result = callServerMethod(obj,method,varargin)
+        function result = callGetResult(obj,method,varargin)
             result = obj.sendRequestGetResult(method,varargin{:});
+        end
+
+        function call(obj,method,varargin)
+            obj.callGetResult(method,varargin{:});
         end
 
         function json = convertToJson(obj,matlabToConvert)
