@@ -74,7 +74,7 @@ sudo usermod -aG dialout $USER
 
 Install git if necessary:
 
-<https://github.com/janelia-idf/git_setup>
+<https://github.com/janelia-experimental-technology/git_setup>
 
 Clone this repository:
 
