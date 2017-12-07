@@ -1,4 +1,4 @@
-#modular_client_matlab
+# modular_client_matlab
 
 ModularClient.m - This is the Matlab modular device client library for
     communicating with and calling remote methods on modular device
@@ -13,7 +13,7 @@ License:
 
     BSD
 
-##Example Usage
+## Example Usage
 
 For help type "help ModularClient" from the Matlab command line.
 
@@ -45,32 +45,15 @@ More Detailed Modular Device Information:
 
 <https://github.com/janelia-modular-devices/modular-devices>
 
-##Installation
+## Installation
 
-###Drivers
+### Install Arduino and Teensyduino on your Host Machine
 
-####Windows
+[Setup Arduino](https://github.com/janelia-arduino/arduino_setup)
 
-When the modular device is Arduino-based, Windows needs drivers in
-order to communicate with the Arduino. Follow install instructions
-here:
+### Download this repository from github
 
-<http://arduino.cc/en/Guide/Windows>
-
-####Linux and Mac OS X
-
-Extra drivers are unnecesary.
-
-On linux, you may need to add yourself to the group 'dialout' in order
-to have write permissions on the USB port:
-
-```shell
-sudo usermod -aG dialout $USER
-```
-
-###Download this repository from github
-
-####Using git
+#### Using git
 
 Install git if necessary:
 
@@ -87,13 +70,13 @@ git submodule init
 git submodule update
 ```
 
-###Setup Matlab
+### Setup Matlab
 
 Add this path and all its subdirectories to the Matlab path:
 
     PATH\modular_client_matlab\modular_client\
 
-###Setup Hardware
+### Setup Hardware
 
 Connect modular device to computer with a USB cable.
 
@@ -104,12 +87,12 @@ help find port. Read more details here:
 
 <http://arduino.cc/en/Guide/HomePage>
 
-####Windows:
+#### Windows:
 
 Typically 'COM3' or higher. Use Matlab command getAvailableComPorts()
 or use 'Device Manager' and look under 'Ports'.
 
-####Mac OS X:
+#### Mac OS X:
 
 List directory contents of /dev:
 
@@ -119,7 +102,7 @@ ls /dev
 
 Typically something like '/dev/tty.usbmodem'
 
-####Linux:
+#### Linux:
 
 List directory contents of /dev:
 
