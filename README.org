@@ -1,0 +1,134 @@
+#+TITLE: modular_client_matlab
+#+AUTHOR: Peter Polidoro
+#+EMAIL: peterpolidoro@gmail.com
+
+* Repository Information
+  - Author :: Peter Polidoro
+  - License :: BSD
+
+  This is the Matlab modular device client library for
+  communicating with and calling remote methods on modular device
+  servers. Based on some code by Will Dickson.
+
+* Example Usage
+
+  For help type "help ModularClient" from the Matlab command line.
+
+  See example m files in:
+
+  [[./modular_client/examples/]]
+
+  #+BEGIN_SRC matlab
+% Linux and Mac OS X
+ls /dev/tty*
+serial_port = '/dev/ttyACM0'     % example Linux serial port
+serial_port = '/dev/tty.usbmodem262471' % example Mac OS X serial port
+% Windows
+getAvailableComPorts()
+ans =
+'COM1'
+'COM4'
+serial_port = 'COM4'             % example Windows serial port
+%
+dev = ModularClient(serial_port) % creates a client object
+dev.open()                       % opens a serial connection to the device
+device_id = dev.getDeviceId()    % get device id
+dev.getMethods()                 % get device methods
+dev.close()                      % close serial connection
+delete(dev)                      % deletes the client
+  #+END_SRC
+
+  More Detailed Modular Device Information:
+
+  [[https://github.com/janelia-modular-devices/modular-devices]]
+
+* Installation
+
+** Install Arduino and Teensyduino on your Host Machine
+
+   [[https://github.com/janelia-arduino/arduino_setup][Setup Arduino]]
+
+** Download this repository from github
+
+*** Using git
+
+    Install git if necessary:
+
+    [[https://github.com/janelia-experimental-technology/git_setup]]
+
+    Clone this repository:
+
+    (e.g. PATH = c:\Users\User\My Documents\Matlab).
+
+    #+BEGIN_SRC sh
+cd PATH
+git clone https://github.com/janelia-matlab/modular_client_matlab.git
+git submodule init
+git submodule update
+    #+END_SRC
+
+** Setup Matlab
+
+   Add this path and all its subdirectories to the Matlab path:
+
+   PATH\modular_client_matlab\modular_client\
+
+** Setup Hardware
+
+   Connect modular device to computer with a USB cable.
+
+   Find serial port of connected device.
+
+   When modular device is Arduino-based, you can use Modular environment to
+   help find port. Read more details here:
+
+   [[http://arduino.cc/en/Guide/HomePage]]
+
+*** Windows:
+
+    Typically 'COM3' or higher. Use Matlab command getAvailableComPorts()
+    or use 'Device Manager' and look under 'Ports'.
+
+*** Mac OS X:
+
+    List directory contents of /dev:
+
+    #+BEGIN_SRC sh
+ls /dev
+    #+END_SRC
+
+    Typically something like '/dev/tty.usbmodem'
+
+*** Linux:
+
+    List directory contents of /dev:
+
+    #+BEGIN_SRC sh
+ls /dev
+    #+END_SRC
+
+    Typically something like '/dev/ttyACM0'
+
+    If you see this error:
+
+    #+BEGIN_SRC matlab
+Error using serial/fopen (line 72)
+Open failed: Port: /dev/ttyACM0 is not available. Available ports: /dev/ttyS0.
+Use INSTRFIND to determine if other instrument objects are connected to the requested device.
+    #+END_SRC
+
+    You can use /dev/ttyACM0 but you need to let the library know that you
+    will be using it. To specify the ports on your system, copy the
+    java.opts file from this repository into the directory you start MATLAB.
+
+    Restart Matlab and type:
+
+    #+BEGIN_SRC matlab
+pwd
+    #+END_SRC
+
+    This will tell you the directory where you need to place the java.opts file.
+
+    Save this file into that directory:
+
+    [[java.opts]]
