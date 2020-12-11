@@ -246,7 +246,7 @@ classdef ModularClient < handle
                 end
 
                 try
-                    responseStruct = loadjson(response);
+                    responseStruct = jsondecode(response);
                 catch ME
                     causeME = MException( ...
                         'ModularClient:unableToParseJSON', ...
