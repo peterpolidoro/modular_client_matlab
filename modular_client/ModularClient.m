@@ -127,7 +127,7 @@ classdef ModularClient < handle
                 'inputbuffersize', obj.inputBufferSize ...
                 );
             if exist('debug','var')
-                obj.debug = debug
+                obj.debug = debug;
             end
 
         end
