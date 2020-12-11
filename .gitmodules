@@ -1,3 +1,0 @@
-[submodule "modular_client/jsonlab"]
-	path = modular_client/jsonlab
-	url = https://github.com/janelia-matlab/jsonlab.git
