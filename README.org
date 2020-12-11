@@ -19,23 +19,23 @@
   [[./modular_client/examples/]]
 
   #+BEGIN_SRC matlab
-		% Linux and Mac OS X
-		ls /dev/tty*
-		serial_port = '/dev/ttyACM0'     % example Linux serial port
-		serial_port = '/dev/tty.usbmodem262471' % example Mac OS X serial port
-																						% Windows
-		getAvailableComPorts()
-		ans =
-		'COM1'
-		'COM4'
-		serial_port = 'COM4'             % example Windows serial port
-																		 %
-		dev = ModularClient(serial_port) % creates a client object
-		dev.open()                       % opens a serial connection to the device
-		device_id = dev.getDeviceId()    % get device id
-		dev.getMethods()                 % get device methods
-		dev.close()                      % close serial connection
-		delete(dev)                      % deletes the client
+    % Linux and Mac OS X
+    ls /dev/tty*
+    serial_port = '/dev/ttyACM0'     % example Linux serial port
+    serial_port = '/dev/tty.usbmodem262471' % example Mac OS X serial port
+                                            % Windows
+    getAvailableComPorts()
+    ans =
+    'COM1'
+    'COM4'
+    serial_port = 'COM4'             % example Windows serial port
+                                     %
+    dev = ModularClient(serial_port) % creates a client object
+    dev.open()                       % opens a serial connection to the device
+    device_id = dev.getDeviceId()    % get device id
+    dev.getMethods()                 % get device methods
+    dev.close()                      % close serial connection
+    delete(dev)                      % deletes the client
 
     debug = true
     dev = ModularClient(serial_port,debug) % creates a client object with debugging
@@ -64,8 +64,8 @@
     (e.g. PATH = c:\Users\User\Documents\MATLAB).
 
     #+BEGIN_SRC sh
-			cd PATH
-			git clone https://github.com/janelia-matlab/modular_client_matlab.git
+      cd PATH
+      git clone https://github.com/janelia-matlab/modular_client_matlab.git
     #+END_SRC
 
 ** Setup Matlab
@@ -95,7 +95,7 @@
     List directory contents of /dev:
 
     #+BEGIN_SRC sh
-			ls /dev
+      ls /dev
     #+END_SRC
 
     Typically something like '/dev/tty.usbmodem'
@@ -105,7 +105,7 @@
     List directory contents of /dev:
 
     #+BEGIN_SRC sh
-			ls /dev
+      ls /dev
     #+END_SRC
 
     Typically something like '/dev/ttyACM0'
@@ -113,9 +113,9 @@
     If you see this error:
 
     #+BEGIN_SRC matlab
-			Error using serial/fopen (line 72)
-			Open failed: Port: /dev/ttyACM0 is not available. Available ports: /dev/ttyS0.
-			Use INSTRFIND to determine if other instrument objects are connected to the requested device.
+      Error using serial/fopen (line 72)
+      Open failed: Port: /dev/ttyACM0 is not available. Available ports: /dev/ttyS0.
+      Use INSTRFIND to determine if other instrument objects are connected to the requested device.
     #+END_SRC
 
     You can use /dev/ttyACM0 but you need to let the library know that you
@@ -125,7 +125,7 @@
     Restart Matlab and type:
 
     #+BEGIN_SRC matlab
-			pwd
+      pwd
     #+END_SRC
 
     This will tell you the directory where you need to place the java.opts file.
