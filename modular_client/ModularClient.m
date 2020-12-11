@@ -74,12 +74,15 @@
 %   dev.close()                      % close serial connection
 %   delete(dev)                      % deletes the client
 %
+%   debug = true
+%   dev = ModularClient(serial_port,debug) % creates a client object with debugging
+
 
 classdef ModularClient < handle
 
     properties
         dev = [];
-        debug = false;
+        debug  = false;
     end
 
     properties (Access=private)
@@ -112,7 +115,7 @@ classdef ModularClient < handle
 
     methods
 
-        function obj = ModularClient(port)
+        function obj = ModularClient(port,debug)
         % ModularClient - class constructor.
             obj.dev = serial( ...
                 port, ...
@@ -123,6 +126,9 @@ classdef ModularClient < handle
                 'terminator', obj.terminator,  ...
                 'inputbuffersize', obj.inputBufferSize ...
                 );
+            if exist('debug','var')
+                obj.debug = debug
+            end
 
         end
 
@@ -181,14 +187,13 @@ classdef ModularClient < handle
         end
 
         function json = convertToJson(obj,matlabToConvert)
-            json = savejson('',matlabToConvert,'ArrayIndent',0, ...
-                            'ParseLogical',1,'SingletArray',0,'Compact',1);
+            json = jsonencode(matlabToConvert);
             json = strtrim(json);
         end
 
         function result = sendJsonRequest(obj,request)
             if obj.isOpen
-                requestCell = loadjson(request,'SimplifyCell',0);
+                requestCell = jsondecode(request);
                 method = requestCell{1};
                 requestJson = obj.convertToJson(requestCell);
                 fprintf(obj.dev,requestJson);
