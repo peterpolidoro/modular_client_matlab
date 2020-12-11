@@ -57,25 +57,26 @@
 %
 %   % Linux and Mac OS X
 %   ls /dev/tty*
-%   serial_port = '/dev/ttyACM0'     % example Linux serial port
+%   serial_port = '/dev/ttyACM0'            % example Linux serial port
 %   serial_port = '/dev/tty.usbmodem262471' % example Mac OS X serial port
-%
-%   % Windows
+%                                           % Windows
 %   getAvailableComPorts()
 %   ans =
 %   'COM1'
 %   'COM4'
-%   serial_port = 'COM4'             % example Windows serial port
-%
-%   dev = ModularClient(serial_port) % creates a client object
-%   dev.open()                       % opens a serial connection to the device
-%   device_id = dev.getDeviceId()    % get device ID
-%   dev.getMethods()                 % get device methods
-%   dev.close()                      % close serial connection
-%   delete(dev)                      % deletes the client
+%   serial_port = 'COM4'                    % example Windows serial port
+%                                           %
+%   dev = ModularClient(serial_port)        % creates a client object
+%   dev.open()                              % opens a serial connection to the device
+%   device_id = dev.getDeviceId()           % get device id
+%   dev.getMethods()                        % get device methods
+%   dev.serialNumber()                      % get device serial number
+%   dev.serialNumber('setValue',int32(1))   % integers must be cast to int32
+%   dev.close()                             % close serial connection
+%   delete(dev)                             % deletes the client
 %
 %   debug = true
-%   dev = ModularClient(serial_port,debug) % creates a client object with debugging
+%   dev = ModularClient(serial_port,debug)  % creates a client object with debugging
 
 
 classdef ModularClient < handle
