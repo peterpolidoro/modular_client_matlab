@@ -71,7 +71,7 @@
 %   device_id = dev.getDeviceId()           % get device id
 %   dev.getMethods()                        % get device methods
 %   dev.serialNumber()                      % get device serial number
-%   dev.serialNumber('setValue',int32(1))   % integers must be cast to int32
+%   dev.serialNumber('setValue',1)          % integers are automatically cast to int32
 %   dev.close()                             % close serial connection
 %   delete(dev)                             % deletes the client
 %
@@ -386,7 +386,7 @@ classdef ModularClient < handle
         % the method and a cell array of the request arguments.
             switch class(method)
               case 'double'
-                request = sprintf('[%d',uint16(method));
+                request = sprintf('[%d',int32(method));
               case 'char'
                 request = sprintf('[%s',method);
               otherwise
@@ -399,7 +399,11 @@ classdef ModularClient < handle
                 switch class(arg)
                   case 'double'
                     if length(arg) == 1
-                        request = sprintf('%s, %f', request, arg);
+                        if floor(arg) ~= ceil(arg)
+                            request = sprintf('%s, %f', request, arg);
+                        else
+                            request = sprintf('%s, %d', request, int32(arg))
+                        end
                     else
                         json = obj.convertToJson(arg);
                         request = sprintf('%s, %s', request, json);
