@@ -36,6 +36,7 @@
     device_id = dev.getDeviceId()           % get device id
     dev.getMethods()                        % get device methods
     dev.serialNumber()                      % get device serial number
+    dev.serialNumber('getValue')            % get device serial number alternative
     dev.serialNumber('setValue',1)          % integers are automatically cast to int32
     dev.close()                             % close serial connection
     delete(dev)                             % deletes the client
