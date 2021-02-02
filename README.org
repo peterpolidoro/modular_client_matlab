@@ -10,6 +10,8 @@
   communicating with and calling remote methods on modular device
   servers. Based on some code by Will Dickson.
 
+	Requires Matlab R2016b or newer.
+
 * Example Usage
 
   For help type "help ModularClient" from the Matlab command line.
